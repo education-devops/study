@@ -65,6 +65,8 @@ $config['smtp_server'] = 'localhost';
 
 $config['smtp_port'] = 25;
 
+$config['db_dsnw'] = 'mysql://roundcube:password@localhost/roundcubemail';
+
 # $config['smtp_user] =
 # $config['smtp_password'] =
 #--------------------------------------------------------
@@ -76,27 +78,9 @@ echo "date.timezone = 'Europe/Moscow'" >>  /etc/php/7.4/apache2/php.ini
 #--------------------------------------------------------
 systemctl restart apache2
 #--------------------------------------------------------
-nano /etc/roundcube/config.inc.php
-$config['db_dsnw'] = 'mysql://roundcube:password@localhost/roundcubemail';
+
 
 http://10.0.1.171/roundcube
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
