@@ -1,0 +1,157 @@
+# Скачать Helm
+
+https://get.helm.sh/helm-v3.10.2-linux-amd64.tar.gz
+
+mkdir Chart-test/; cd Chart-test/
+#------------------------------------------------------------------------
+nano Chart.yml
+
+apiVersion: v2
+name       : App-HelmChart
+description: My Helm chart for Kubernetes
+type       : application
+version    : 0.1.0   # This is the Helm Chart version
+appVersion : "1.2.3" # This is the version of the application being deployed
+
+keywords:
+  - apache
+  - http
+  - https
+  - denisastahov
+
+maintainers:
+  - name : test
+    email: testt@example.com
+    url  : www.example.com
+#------------------------------------------------------------------------
+nano values.yaml
+
+# Default Values for my Helm Chart
+
+container:
+  image: adv4000/k8sphp:latest
+
+replicaCount: 2
+#------------------------------------------------------------------------
+mkdir templates; cd templates
+
+nano deployment.yaml
+
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  labels:
+    app : {{ .Release.Name }}-deployment
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      project: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        project: {{ .Release.Name }}   # Service will look for those PODS Labels!!!
+    spec:
+      containers:
+        - name : {{ .Release.Name }}-web
+          image: {{ .Values.container.image }}
+          ports:
+            - containerPort: 80
+#------------------------------------------------------------------------
+nano service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-service
+  labels:
+    env  : prod
+    owner: DenisAstahov
+spec:
+  selector:
+    project: {{ .Release.Name }}    # Selecting PODS with those Labels
+  ports:
+    - name      : {{ .Release.Name }}-listener
+      protocol  : TCP
+      port      : 80  # Port on Load Balancer
+      targetPort: 80  # Port on POD
+  type: LoadBalancer
+#------------------------------------------------------------------------
+helm list
+helm install app Chart-Denis/
+helm list
+
+kubectl get pods
+kubectl get deploy
+kubectl get svc
+
+helm install app1 Chart-Denis/ --set container.image=adv4000/k8sphp:version1 --set replicaCount=3
+kubectl get svc
+kubectl get pods
+kubectl get deploy
+
+helm upgrade app1 Chart-Denis/ --set container.image=adv4000/k8sphp:version1 --set replicaCount=4
+kubectl get pods
+helm list
+#-----------------------------------------------
+pwd /root/helm
+
+nano prod_values.yaml
+
+container:
+  image: adv4000/k8sphp:latest
+ 
+replicaCount: 4
+#-----------------------------------------------
+helm install app2 Chart-Denis/ -f prod_values.yaml
+kubectl get pods
+kubectl get svc
+
+helm package Chart-Denis/
+helm install app4 App-HelmChart-0.1.0.tgz
+
+helm search repo
+helm search hub apache
+
+helm repo add bitname https://charts.bitname.com/bitname
+helm search repo
+helm install website-apache bitnami/apache
+helm list
+kubectl get svc
+#-----------------------------------------------
+nano apache_webpage.yaml
+
+# helm install custom-apache bitnami/apache -f apache_mywebpage.yaml
+
+cloneHtdocsFromGit:
+  enabled: true
+  repository: https://github.com/adv4000/simplewebpage
+  branch: main
+#-----------------------------------------------
+
+helm install custom-apache bitnami/apache -f apache_mywebpage.yaml
+
+helm list
+helm delete app
+helm delete app1
+helm delete app2
+helm delete app4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

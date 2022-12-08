@@ -1,0 +1,120 @@
+#Sticky session
+
+nano load_balancer.php
+
+events {}
+
+http {
+
+    upstream php_servers {
+        ip_hash;
+        server localhost:10001;
+        server localhost:10002;
+        server localhost:10003;
+    }
+
+    server {
+        listen 8080;
+
+        location / {
+            proxy_pass 'http://php_servers';
+        }
+    }
+
+}
+#--------------------------------------------------------
+
+php -S localhost:10001 s1
+php -S localhost:10002 s2
+php -S localhost:10003 s3
+
+while sleep 1; do curl http://localhost:8080; done
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Будет проксировать где меньше нагрузки
+
+nano load_balancer.php
+
+events {}
+
+http {
+
+    upstream php_servers {
+        least_conn;
+        server localhost:10001;
+        server localhost:10002;
+        server localhost:10003;
+    }
+
+    server {
+        listen 8080;
+
+        location / {
+            proxy_pass 'http://php_servers';
+        }
+    }
+
+}
+#--------------------------------------------------------
+nano slow.php
+
+<?php
+
+sleep(1);
+
+echo "Sleepy server finally done!\n";
+#--------------------------------------------------------
+
+php -S localhost:10001 slow.php
+php -S localhost:10002 s2
+php -S localhost:10003 s3
+
+
+while sleep 1; do curl http://localhost:8080; done
+while sleep 1; do curl http://localhost:8080; done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,87 @@
+sudo apt-get install lxc -y
+
+nano /etc/default/lxc-net
+
+USE_LXC_BRIDGE="true"
+#-----------------------------------------------------------------------
+# Библиотека
+
+/var/lib/lxc
+sudo ls /usr/share/lxc/templates/
+#-----------------------------------------------------------------------
+# Статический адрес
+
+nano /var/lib/lxc/debian/config
+
+lxc.net.0.type = veth
+lxc.net.0.link = lxcbr0
+lxc.net.0.flags = up
+lxc.net.0.ipv4.address = 192.168.X.20/24
+lxc.net.0.ipv4.gateway = 192.168.X.1
+
+lxc.start.auto = 1
+
+# Динамический
+lxc.net.0.type = veth
+lxc.net.0.link = lxcbr0
+lxc.net.0.flags = up
+
+lxc.start.auto = 1
+#-----------------------------------------------------------------------
+# проверить/создать/запуск/остановка/копирование/мониторинг и т.д
+
+# Проверить конфигурацию
+lxc-checkconfig
+
+# создать контейнер
+lxc-create -t debian -n debian
+
+# Скачать другие ОС
+sudo lxc-create -t download -n MynewContainer
+sudo lxc-create -t download -n ubuntu -- -d ubuntu -r focal -a amd64
+sudo lxc-create -t download -n fedora -- -d fedora -r 35 -a amd64
+
+# Запуск
+lxc-start debian
+
+# Автостарт
+lxc-autostart debian
+
+# Остановка
+lxc-stop debian
+
+# Подключение к контейнеру
+lxc-attach debian
+
+# Копия
+lxc-copy debian -N docker
+
+# Мониторинг
+lxc-monitoring debian
+
+# Общая информация
+lxc-ls -f
+
+# Информация о заданном контейнере
+lxc-ls info debian
+
+# Заморозить все процессы
+lxc-freeze debian
+
+# Разморозить все процессы
+lxc-unfreeze debian
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

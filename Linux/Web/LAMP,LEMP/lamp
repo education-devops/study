@@ -1,0 +1,68 @@
+sudo apt-get update; sudo apt-get install libapache2-mod-php php-mysql default-mysql-server -y
+#-------------------------------------------------------------------------------------------------
+nano /etc/apache2/sites-available/php-test.com.conf
+
+<VirtualHost *:80>
+        ServerAdmin root@php-test.com
+        ServerName php-test.com
+        ServerAlias www.php-test.com
+        DocumentRoot /var/www/php-test.com/
+        ErrorLog /var/log/apache2/php-test.com/error.log
+        CustomLog /var/log/apache2/php-test.com/access.log combined
+</VirtualHost>
+#-------------------------------------------------------------------------------------------------
+mkdir /var/www/php-test.com/
+mkdir /var/log/apache2/php-test.com/
+#-------------------------------------------------------------------------------------------------
+nano /var/www/php_test.com/index.php
+
+<?php phpinfo(); ?>
+#-------------------------------------------------------------------------------------------------
+nano /var/www/php_test.com/test-connection.php
+
+<?php
+$servername = 'localhost';
+$username   = 'root';
+$password   = 'password';
+
+// Create connection
+$conn = new mysqli($servername, $username, $password);
+
+// Check connection
+if ($conn->connect_error) {
+    die("(Connection failed: " . $conn->connect_error);
+}
+
+$sql        = "SELECT VERSION()";
+$result     = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    // Output data of each row
+    while($row = $result->fetch_assoc()) {
+        print_r($row);
+    }
+} else {
+    echo "0 results";
+}
+$conn->close();
+?>
+#-------------------------------------------------------------------------------------------------
+
+a2ensite php-test.com
+
+mysql_secure_installation
+#-------------------------------------------------------------------------------------------------
+mysql
+SELECT user, plugin FROM mysql.user;
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' USING PASSWORD ('password');
+#-------------------------------------------------------------------------------------------------
+# Если нужно
+
+CREATE DATABASE web_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE web_db;
+CREATE USER 'web_user'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON web_db.* to 'web_user'@'localhost';
+exit;
+#-------------------------------------------------------------------------------------------------
+

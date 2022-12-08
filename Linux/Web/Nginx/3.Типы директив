@@ -1,0 +1,8 @@
+Стандартная директива	-	gzip on;
+
+Директива массив	-	access_log	logs/access.log;
+			-	access_log	logs/access_notice.log	notice;
+
+Директива действия	-	rewrite, return
+
+Директива try_files	-	try_files 

@@ -1,0 +1,166 @@
+sudo apt-get install libpcre3 libpcre3-dev libssl-dev zlib1g-dev make cmake automake autoconf golang wget curl -y
+
+wget https://nginx.org/download/nginx-1.23.2.tar.gz
+
+tar xfvz nginx-1.23.2.tar.gz
+
+cd nginx
+
+./configure --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/acess.log --pid-path=/var/run/nginx.pid --with-pcre --with-debug \
+--with-http_ssl_module --modules-path=/etc/nginx/modules --with-http_v2_module
+
+make -j 12
+make install
+
+В дальнейшем, если нужно будет обновить версию - повторить верхние действия.
+systemctl restart nginx
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+https://www.nginx.com/resources/wiki/start/topics/examples/initscripts/
+
+#вариант systemd
+
+nano /lib/systemd/system/nginx.service
+
+[Unit]
+Description=The NGINX HTTP and reverse proxy server
+After=syslog.target network-online.target remote-fs.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t
+ExecStart=/usr/sbin/nginx
+ExecReload=/usr/sbin/nginx -s reload
+ExecStop=/bin/kill -s QUIT $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+#-------------------------------------------------------------------------
+systemctl daemon-reload
+systemctl start nginx
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+
+# вариант init.d(service)
+
+nano /etc/init.d/nginx
+
+#! /bin/sh
+ 
+### BEGIN INIT INFO
+# Provides:          nginx
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the nginx web server
+# Description:       starts nginx using start-stop-daemon
+### END INIT INFO
+ 
+PATH=/opt/bin:/opt/sbin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/opt/sbin/nginx
+NAME=nginx
+DESC=nginx
+ 
+test -x $DAEMON || exit 0
+ 
+# Include nginx defaults if available
+if [ -f /etc/default/nginx ] ; then
+        . /etc/default/nginx
+fi
+ 
+set -e
+ 
+case "$1" in
+  start)
+        echo -n "Starting $DESC: "
+        start-stop-daemon --start --quiet --pidfile /var/run/nginx.pid \
+                --exec $DAEMON -- $DAEMON_OPTS
+        echo "$NAME."
+        ;;
+  stop)
+        echo -n "Stopping $DESC: "
+        start-stop-daemon --stop --quiet --pidfile /var/run/nginx.pid \
+                --exec $DAEMON
+        echo "$NAME."
+        ;;
+  restart|force-reload)
+        echo -n "Restarting $DESC: "
+        start-stop-daemon --stop --quiet --pidfile \
+                /var/run/nginx.pid --exec $DAEMON
+        sleep 1
+        start-stop-daemon --start --quiet --pidfile \
+                /var/run/nginx.pid --exec $DAEMON -- $DAEMON_OPTS
+        echo "$NAME."
+        ;;
+  reload)
+      echo -n "Reloading $DESC configuration: "
+      start-stop-daemon --stop --signal HUP --quiet --pidfile /var/run/nginx.pid \
+          --exec $DAEMON
+      echo "$NAME."
+      ;;
+  *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+ 
+exit 0
+#------------------------------------------------------------------------
+
+cd /etc/init.d/
+chmod +x nginx
+update-rc.d -f nginx defaults
+
+echo "NGINX_CONF_FILE=/etc/nginx/nginx.conf" > /etc/default/nginx
+echo "DAEMON=/usr/sbin/nginx" >> /etc/default/nginx
+echo PID > /var/run/nginx.pid
+nginx -c /etc/nginx/nginx.conf
+nginx -s reload
+service nginx start
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

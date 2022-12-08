@@ -1,0 +1,24 @@
+sudo nano /etc/hosts
+
+10.0.1.98	user1.php-test.com
+#-------------------------------------------------------------
+sudo hostnamectl set-hostname user1.php-test.com 
+#-------------------------------------------------------------
+sudo apt-get install mailutils postfix dovecot-imapd thunderbird
+#-------------------------------------------------------------
+sudo nano /etc/aliases
+#Добавить
+support:	user1
+
+sudo newaliases
+#-------------------------------------------------------------
+nano /etc/dovecot/conf.d/10-auth.conf
+disable_plaintext_auth = no
+...
+nano /etc/dovecot/conf.d/10-mail.conf
+Убедиться, что
+mail_privileged_group = mail
+Проверяем корректность:
+dovecot -n
+systemctl restart dovecot
+#-------------------------------------------------------------

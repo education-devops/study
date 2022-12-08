@@ -1,0 +1,37 @@
+nano nginx/nginx.conf
+
+events {}
+
+http {
+    server {
+        listen 8888;
+
+        location / {
+            return 200 "Hello from NGINX\n";
+        }
+
+        location /php {
+
+#           add_header proxied nginx;
+            proxy_set_header proxied nginx;
+            proxy_pass 'http://localhost:9999/';
+        }
+
+        location /nginxorg {
+            proxy_pass 'http://nginx.org/';
+        }
+    }
+}
+#----------------------------------------------------------
+nano nginx/show_request.php
+
+<?php
+
+//echo 'Path: ' . $_SERVER['REQUEST_URI'];
+
+// Выводим значение функции
+var_dump(getallheaders());
+
+
+php -S localhost:9999 show_request.php
+curl localhost:8888/php/some/url

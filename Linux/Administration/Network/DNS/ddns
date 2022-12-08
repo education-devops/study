@@ -1,0 +1,120 @@
+sudo apt-get update; sudo apt-get install bind9 isc-dhcp-server isc-dhcp-client-ddns isc-dhcp-client -y
+
+sudo ddns-confgen -k ns.example.org
+sudo cp ns.key /etc/bind/
+sudo cp ns.key /etc/dhcp/
+#===========================================================================================================
+sudo nano /etc/bind/named.conf.local
+
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+include "/etc/bind/ns.key";
+
+zone "example.org" {
+        type master;
+        file "/var/cache/bind/db.example.org";
+        update-policy {
+                grant ns.example.org wildcard *.example.org A DHCID;
+        };
+};
+
+zone "1.168.192.in-addr.arpa" {
+        type master;
+        file "/var/cache/bind/db.1.168.192";
+        update-policy {
+                grant ns.example.org wildcard *.1.168.192.in-addr.arpa PTR;
+        };
+};
+
+
+#===========================================================================================================
+cd /var/cache/bind
+sudo cp /etc/bind/db.empty /var/cache/bind/db.example.org
+sudo cp /etc/bind/db.empty /var/cache/bind/db.1.168.192
+sudo chown bind:bind /var/cache/bind/*
+sudo chmod 0660 /var/cache/bind/db.example.org
+sudo chmod 0660 /var/cache/bind/db.1.168.192
+#-----------------------------------------------------------------------
+sudo nano db.example.org
+
+; Zone file for example.org
+;
+$TTL    86400
+@       IN      SOA     example.org. root.example.org. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                          86400 )       ; Negative Cache TTL
+;
+@               IN      NS      ns.example.org.
+ns      IN      A       192.168.1.1
+#-----------------------------------------------------------------------
+sudo nano db.1.168.192
+
+; Zone file for 192.168.1
+;
+$TTL    86400
+@       IN      SOA     example.org. root.example.org. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                          86400 )       ; Negative Cache TTL
+;
+@               IN      NS      ns.example.org.
+1               IN      PTR     ns.example.org.
+#===========================================================================================================
+sudo nano /etc/dhcp/dhcpd.conf
+
+# dhcpd.conf
+include "/etc/dhcp/ns.key";
+
+default-lease-time 600;
+max-lease-time 7200;
+
+ddns-updates on;
+ddns-update-style standard;
+update-static-leases on;
+log-facility local7;
+
+
+zone example.org. {
+        primary 192.168.1.1;
+        key ns.example.org;
+}
+
+zone 1.168.192.in-addr.arpa. {
+        primary 192.168.1.1;
+        key ns.example.org;
+}
+
+subnet 192.168.1.0 netmask 255.255.255.0 {
+  range 192.168.1.101 192.168.1.199;
+  option domain-name-servers 192.168.1.1;
+  option domain-name "example.org";
+  option routers 192.168.1.1;
+  option broadcast-address 192.168.1.255;
+}
+
+#Host fileserver{
+#hardware ethernet 52:54:00:93:7F:32;
+#fixed-address 192.168.1.134;
+#}
+#-----------------------------------------------------------------------
+sudo nano /etc/default/isc-dhcp-server
+INTERFACESv4="enp7s0"
+#-----------------------------------------------------------------------
+sudo nano /etc/rsyslog.conf 
+local7.*			-/var/log/dhcpd.log
+
+sudo systemctl restart rsyslog.service
+sudo systemctl restart bind9
+sudo systemctl restart isc-dhcp-server
+sudo rndc freeze; suro rndc thaw
+

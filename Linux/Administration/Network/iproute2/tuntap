@@ -1,0 +1,110 @@
+tap - может принимать и отправлять ARP запросы, обладает MAC адресом и может являться одним из интерфейсов сетевого моста, так как он обладает полной поддержкой ethernet - протокола канального уровня (уровень 2). 
+tun - может принимать и отправлять только IP пакеты и никак не ethernet кадры. Он не обладает MAC-адресом и не может быть добавлен в бридж. Подходит для тестирования сетевого стека или построения виртуальных частных сетей (VPN).
+
+ip tuntap add dev tun0 mode tun
+ip address add 192.168.99.1/30 dev tun0
+ip address show tun0
+
+ip tuntap add dev tap0 mode tap
+ip address add 192.168.99.5/30 dev tap0
+ip address show tap0
+
+brctl addr br0
+brctl show
+
+ip link set dev tap0 master br0
+
+ip link add dev dum0 type dummy
+ip address add 192.168.99.9/30 dev dum0
+ip address show dum0
+
+ip link set dev dum0 master br0
+
+В systemd-networkd за создание интерфейсов отвечают одни конфигурационные файлы, имеющие суффикс ".netdev", а за их настройку другие, имеющие суффикс ".network". 
+Соответственно нам понадобиться в /etc/systemd/network создать по паре конфигурационных файлов для каждого из исследуемых типов интерфейсов.
+
+#--------------------------------------------------------------------
+nano /etc/systemd/network/tun0.netdev 
+
+[NetDev]
+Name=tun0
+Kind=tun
+
+nano /etc/systemd/network/tun0.network 
+
+[Match]
+Name=tun0
+ 
+[Network]
+Address=192.168.98.1/30
+#--------------------------------------------------------------------
+nano /etc/systemd/network/tap0.netdev 
+
+[NetDev]
+Name=tap0
+Kind=tap
+
+nano /etc/systemd/network/tap0.network 
+
+[Match]
+Name=tap0
+ 
+[Network]
+Address=192.168.98.5/30
+#--------------------------------------------------------------------
+nano /etc/systemd/network/dum0.netdev 
+
+[NetDev]
+Name=dum0
+Kind=dummy
+
+nano /etc/systemd/network/dum0.network
+
+[Match]
+Name=dum0
+ 
+[Network]
+Address=192.168.98.9/30
+#--------------------------------------------------------------------
+Для создания виртуальных частных сетей (VPN), в секции "Network" следует добавить диррективу "IPForward=yes".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

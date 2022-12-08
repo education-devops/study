@@ -1,0 +1,15 @@
+host yandex.ru
+host 8.8.8.8
+
+dig yandex.ru
+dig @8.8.8.8 yandex.ru
+dig @8.8.8.8 google.com
+gig google.com
+
+getent hosts
+getent hosts google.com
+getent hosts yandex.ru
+
+nslookup -q=A
+nslookup -q=NS
+nslookup -q=PTR

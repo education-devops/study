@@ -1,0 +1,162 @@
+minikube start --cpus=4 --memory=8gb --disk-size=9gb --driver=docker
+
+kubectl get nodes
+kubectl get pods
+
+kubectl run hello --image=adv4000/k8sphp:latest --port=80
+kubectl get pods
+kubectl get pods -o wide
+kubectl delete pods hello
+
+#debug
+kubectl describe pods hello
+kubectl logs hello
+
+kubectl exec -it hello bash
+
+#---------------------------------------------------------------------------
+#Переброска портов с локальной сети
+sudo sysctl -w net.ipv4.conf.all.route_localnet=1
+sudo iptables -t nat -A PREROUTING -i enp1s0 -p tcp -m tcp --dport 7788 -j DNAT --to-destination 127.0.0.1:7788
+
+kubectl port-forward hello 7788:80
+#---------------------------------------------------------------------------
+kubectl delete pods hello
+#---------------------------------------------------------------------------
+mkdir pods; cd pods
+
+nano pod-myweb-ver1.yaml
+
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: my-web
+spec:
+  containers:
+    - name: container-apache
+      image: httpd:latest
+      ports:
+        - containerPort: 80
+#---------------------------------------------------------------------------
+kubectl apply -f pod-myweb-ver1.yaml
+
+kubectl get pods
+kubectl get pods -o wide
+kubectl describe pods my-web
+
+#---------------------------------------------------------------------------
+nano pod-myweb-ver1.yaml
+
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: my-web
+spec:
+  containers:
+    - name: container-apache
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+#---------------------------------------------------------------------------
+kubectl apply -f pod-myweb-ver1.yaml
+kubectl port-forward my-web 8888:80
+#---------------------------------------------------------------------------
+kubectl delete -f pod-myweb-ver1.yaml
+
+nano pod-myweb-ver2.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-web
+  labels: 
+    env: prod
+    app: main
+    tier: frontend
+    owner: admin
+spec:
+  containers:
+    - name: container-apache
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+#---------------------------------------------------------------------------
+kubectl apply -f pod-myweb-ver2.yaml
+kubectl describe pods my-web
+
+nano pod-myapp.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app
+  labels:
+    env: prod
+    app: main
+    tier: frontend
+    owner: admin
+spec:
+  containers:
+    - name: container-web   
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+  
+    - name: container-api   
+      image: tomcat:8.5.38
+      ports:
+        - containerPort: 8080
+#---------------------------------------------------------------------------
+kubectl apply -f pod-myapp.yaml
+kubectl get pods -o wide
+kubectl describe pods my-app
+
+kubectl port-forward hello 5555:80
+kubectl port-forward hello 5555:8080
+
+kubectl delete -f pod-myweb-ver1.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,224 @@
+kubectl create deployment test-deployment --image adv4000/k8sphp:latest
+kubectl scale deployment test-deployment --replicas 3
+kubectl get pods
+
+kubectl expose deployment test-deployment --type=ClusterIP --port 80
+kubectl get services
+kubectl get svc
+kubectl delete service test-deployment
+
+kubectl get deploy
+kubectl expose deployment test-deployment --type=NodePort --port 80
+kubectl get svc
+#для cloud
+kubectl describe nodes | grep ExternalIP
+
+kubectl delete svc test-deployment
+kubectl get svc
+
+kubectl expose deployment test-deployment --type=LoadBalancer --port 80
+kubectl get svc
+#external-IP
+
+kubectl delete svc test-deployment
+kubectl delete deploy test-deployment
+#-------------------------------------------------------------------------------
+nano service1-loadbalancer-single.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-web-deployment
+  labels:
+    app: my-k8s-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      project: lbs
+  template:
+    metadata:
+      labels:
+        project: lbs # Service will look for those PODS Labels!!!
+    spec:
+      containers:
+      - name: lbs-web
+        image: adv4000/k8sphp:latest
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-single-pod-service
+  labels:
+    env: prod
+    owner: admin
+spec:
+  selector:
+    project: lbs  #Selecting PODS with those Labels
+  ports:
+  - name: app-listener
+    protocol: TCP
+    port: 80       #Port on Load Balancer
+    targetPort: 80 #Port on POD
+  type: LoadBalancer
+#-------------------------------------------------------------------------------
+kubectl apply -f service1-loadbalancer-single.yml
+kubectl get deploy
+kubectl get svc
+#-------------------------------------------------------------------------------
+nano service2-loadbalancer-multi.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-web-deployment-multi-pod
+  labels:
+    app: my-k8s-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      project: lbm
+  template:
+    metadata:
+      labels:
+        project: lbm # Service will look for those PODS Labels!!!
+    spec:
+      containers:
+      - name: my-web
+        image: adv4000/k8sphp:latest
+        ports:
+        - containerPort: 80 # Port on Pod
+
+      - name: not-my-web
+        image: tomcat:8.5.38
+        ports:
+        - containerPort: 8080 # Port on Pod
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-multi-pods-service
+  labels:
+    env: prod
+    owner: admin
+spec:
+  type: LoadBalancer
+  selector:
+    project: lbm 
+  ports:
+  - name:       my-web-app-listener
+    protocol:   TCP
+    port:       80       
+    targetPort: 80 
+  
+  - name:       not-my-web-app-listener
+    protocol:   TCP
+    port:       8888
+    targetPort: 8080
+#-------------------------------------------------------------------------------
+kubectl apply -f service2-loadbalancer-multi.yml
+kubectl get svc
+#-------------------------------------------------------------------------------
+nano service3-loadbalancer-autoscalling.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-web-deployment-autoscaling
+  labels:
+    app: my-k8s-deployment
+spec:
+  selector:
+    matchLabels:
+      project: lba
+  template:
+    metadata:
+      labels:
+        project: lba
+    spec:
+      containers:
+      - name: lba-web
+        image: adv4000/k8sphp:latest
+        ports:
+        - containerPort: 80 
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-web-deployment-autoscaling
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-autoscaling-pod-service
+  labels:
+    env: prod
+    owner: admin
+spec:
+  selector:
+    porject: lba
+  ports:
+  - name: app-listener
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+#-------------------------------------------------------------------------------
+kubectl apply -f service3-loadbalancer-autoscalling.yml
+kubectl get svc
+
+kubectl delete -f service3-loadbalancer-autoscalling.yml 
+kubectl delete -f service2-loadbalancer-multi.yml 
+kubectl delete -f service1-loadbalancer-single.yml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

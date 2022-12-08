@@ -1,0 +1,22 @@
+ip addr add 192.168.1.210/24 dev enp1s0
+ip addr del 192.168.1.210/24 dev enp1s0
+
+#назначается или меняется адрес
+ifconfig enp1s0 0
+ifconfig enp1s0 192.168.1.1
+ifconfig enp1s0 netmask 255.0.0.0
+
+ifconfig enp1s0 hw ether 54:21:12:4c:13:12
+или
+ip link set enp1s0 address f4:55:9c:22:22:22
+или
+macchanger -r enp1s0
+
+
+ifconfig enp1s0 up
+или 
+ip link set enp1s0 up
+
+ifconfig enp1s0 down
+или
+ip link set enp1s0 down

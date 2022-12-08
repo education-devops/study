@@ -1,0 +1,211 @@
+tasks/main.yml- основной список задач, которые выполняет роль.
+
+handlers/main.yml- обработчики, которые могут использоваться внутри или вне этой роли.
+
+library/my_module.py- модули, которые можно использовать в рамках этой роли (подробнее см. Встраивание модулей и плагинов в роли ).
+
+defaults/main.yml- переменные по умолчанию для роли (дополнительную информацию см. в разделе Использование переменных ). Эти переменные имеют самый низкий приоритет из всех доступных переменных и могут быть легко переопределены любой другой переменной, включая переменные инвентаризации.
+
+vars/main.yml- другие переменные для роли (дополнительную информацию см. в разделе Использование переменных ).
+
+files/main.yml- файлы, которые развертывает роль.
+
+templates/main.yml- шаблоны, которые развертывает роль.
+
+meta/main.yml- метаданные для роли, включая ролевые зависимости.
+#-------------------------------------------------------------------------------
+
+mkdir roles; cd roles
+
+ansible-galaxy init deploy_apache_web
+
+.
+└── deploy_apache_web
+    ├── defaults
+    │   └── main.yml
+    ├── files
+    |
+    ├── handlers
+    │   └── main.yml
+    ├── meta
+    │   └── main.yml
+    ├── README.md
+    ├── tasks
+    │   └── main.yml
+    ├── templates
+    ├── tests
+    │   ├── inventory
+    │   └── test.yml
+    └── vars
+        └── main.yml
+
+cp -r ../../MyWebSite2/*.png files/
+
+cp -r ../../MyWebSite2/index.j2 templates/
+#----------------------------------------------------------------------------------------------
+nano defaults/main.yml
+
+dest_file: /var/www/html
+
+packages:
+  - golang
+  - vim
+  - net-tools
+  - rsync
+  - pip
+  - nano
+#----------------------------------------------------------------------------------------------
+nano handlers/main.yml
+
+- name: Restart Apache Debian
+  systemd:
+    name: apache2
+    state: restarted
+  when: ansible_os_family=="Debian"
+
+- name: Restart Apache RedHat
+  systemd:
+    name: httpd
+    state: restarted
+  when: ansible_os_family=="RedHat"
+#----------------------------------------------------------------------------------------------
+nano tasks/main.yml #Обратить внимание на пути в template и в copy!!!!
+
+---
+# tasks file for deploy_apache_web
+
+- debug:
+    msg: "Linux version: {{ ansible_os_family }}; IP address: {{ ansible_eth0.ipv4.address }}"
+
+- block: # ========RedHat========
+    
+    - name: Install Apache WebServer for RedHat
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start Apache and Enable RedHat
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes
+      
+  when: ansible_os_family=="RedHat"
+
+- block: # ========Debian========
+
+    - name: Install Apache WebServer for Debian
+      apt:
+        name: apache2
+        state: present
+  
+    - name: Start Apache and Enable Debian
+      systemd:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Install packages
+      apt:
+        name="{{ packages }}"
+        state=present
+        update_cache=yes
+    
+  when: ansible_os_family=="Debian"
+
+- name: Generate INDEX.HTML file
+  template:
+    src: index.j2
+    dest: "{{ dest_file }}/index.html"
+    mode: 0644
+  notify:
+    - Restart Apache Debian
+    - Restart Apache RedHat
+
+- name: Copy MyHomePage to Servers Debian
+  copy:
+    src: "{{ item }}"
+    dest: "{{ dest_file }}"
+    mode: 0644
+  loop:
+    - "bahamas.png"
+    - "jordan.png"
+    - "newzeland.png"
+    - "Flag.png"
+           
+  notify: 
+    - Restart Apache Debian
+    - Restart Apache RedHat
+
+#------------------------------------------------------------------------
+nano playbook.yml
+
+- name: Install Apache and Upload Web Page
+  hosts: all
+  become: yes
+
+  roles:
+    - { role: deploy_apache_web, when: ansible_system == 'Linux' }
+
+#------------------------------------------------------------------------
+deploy_apache_web
+│       ├── defaults
+│       │   └── main.yml
+│       ├── files
+│       │   ├── bahamas.png
+│       │   ├── Flag.png
+│       │   ├── jordan.png
+│       │   └── newzeland.png
+│       ├── handlers
+│       │   └── main.yml
+│       ├── README.md
+│       ├── tasks
+│       │   └── main.yml
+│       ├── templates
+│       │   └── index.j2
+│       └── tests
+│           ├── inventory
+│           └── test.yml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

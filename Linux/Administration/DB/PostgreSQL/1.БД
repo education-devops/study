@@ -1,0 +1,237 @@
+sudo apt-get install postgresql-13
+
+systemctl status postgresql
+
+#1
+su postgres
+psql
+--------------------------------------------------
+#2
+nano /etc/postgresql/13/main/postgresql.conf
+
+listen_addresses = '*'
+
+systemctl restart postgresql
+
+ss -ltnp
+
+лучше запускать "systemctl reload postgresql" чем restart
+--------------------------------------------------
+#1
+
+\l
+
+CREATE DATABASE unixway1;
+CREATE DATABASE unixway2;
+
+# создать пользователя
+CREATE USER unixway1user WITH ENCRYPTED PASSWORD 'password1';
+GRANT ALL PRIVILEGES ON DATABASE unixway1 TO unixway1user;
+ALTER DATABASE unixway1 OWNER TO unixway1user;
+
+# создать пользователя
+CREATE USER unixway2user WITH ENCRYPTED PASSWORD 'password2';
+GRANT ALL PRIVILEGES ON DATABASE unixway2 TO unixway2user;
+ALTER DATABASE unixway2 OWNER TO unixway2user;
+
+REVOKE CONNECT ON DATABASE unixway1 FROM PUBLIC;
+REVOKE CONNECT ON DATABASE unixway2 FROM PUBLIC;
+
+#2
+nano /etc/postgresql/13/main/pg_hba.conf 
+host    all             all             10.0.10.0/24            md5
+
+systemctl reload postgresql
+
+#host
+psql -h 127.0.0.1 -p 5432 -U unixway1user unixway1
+unixway1=> \c unixway2
+
+unixway1=> CREATE TABLE users(user_pid SERIAL PRIMARY KEY, user_name TEXT NOT NULL, user_email TEXT NOT NULL, user_balance INTEGER NOT NULL);
+unixway1=> \d
+unixway1=> \d users
+
+unixway1=> INSERT INTO users(user_name,user_email,user_balance) VALUES('Jerry Kinn', 'jkinn@gmail.com', 1000);
+unixway1=> INSERT INTO users(user_name,user_email,user_balance) VALUES('Adam Smith', 'asmith@gmail.com', 1000);
+unixway1=> INSERT INTO users(user_name,user_email,user_balance) VALUES('Bully Jonnes', 'bjonnes@gmail.com', 1000);
+
+unixway1=> SELECT * FROM users;
+unixway1=> \d
+unixway1=> DROP TABLE users;
+unixway1=> \d
+
+unixway1=> CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+unixway1=> CREATE TABLE users(user_pid SERIAL PRIMARY KEY, user_id UUID NOT NULL DEFAULT uuid_generate_v4(), user_name TEXT NOT NULL, user_email TEXT NOT NULL, user_balance INTEGER NOT NULL, user_registration TIMESTAMP NOT NULL DEFAULT now());      
+unixway1=> \d
+unixway1=> \d users
+
+unixway1=> SELECT uuid_generate_v4();
+
+unixway1=> INSERT INTO users(user_name,user_email,user_balance) VALUES('Jerry Kinn', 'jkinn@gmail.com', 1000);
+unixway1=> INSERT INTO users(user_name,user_email,user_balance) VALUES('Adam Smith', 'asmith@gmail.com', 1000);
+unixway1=> INSERT INTO users(user_name,user_email,user_balance) VALUES('Bully Jonnes', 'bjonnes@gmail.com', 1000);
+unixway1=> SELECT * FROM users;
+
+unixway1=> ALTER TABLE users ALTER COLUMN user_balance SET DEFAULT 0;
+unixway1=> \d users
+unixway1=> INSERT INTO users(user_name,user_email) VALUES('Martha Longdale', 'mlngdale@gmail.com');
+unixway1=> \d users
+unixway1=> ALTER TABLE users ADD CHECK(user_balance >= 0);
+unixway1=> \d users
+
+unixway1=> ALTER TABLE users ADD CHECK(length(user_name) <= 100);
+unixway1=> ALTER TABLE users ADD CHECK(length(user_email) <= 100);
+unixway1=> \d users
+
+unixway1=> ALTER TABLE users ADD COLUMN user_enabled BOOLEAN NOT NULL DEFAULT true;
+unixway1=> \d users
+unixway1=> SELECT * FROM users;
+
+unixway1=> ALTER TABLE users DROP COLUMN user_enabled;
+unixway1=> \d users
+
+unixway1=> UPDATE users SET user_balance = user_balance + 100 WHERE user_pid = 2;
+unixway1=> SELECT * FROM users;
+
+unixway1=> UPDATE users SET user_balance = user_balance + 100 WHERE user_id = '12a04b83-3940-49ec-b644-91454969c249';
+unixway1=> SELECT * FROM users;
+
+unixway1=> UPDATE users SET user_balance = user_balance + 10;
+unixway1=> SELECT * FROM users;
+
+unixway1=> UPDATE users SET user_balance = user_balance - 100;
+unixway1=> UPDATE users SET user_balance = user_balance + 100 WHERE user_balance < 100;
+
+unixway1=> UPDATE users SET user_balance = 0;
+unixway1=> SELECT * FROM users;
+
+unixway1=> DELETE FROM users;
+unixway1=> SELECT * FROM users;
+unixway1=> \d users
+
+#host
+virtualenv -p python3 .venv
+source .venv.bin/activate
+
+sudo apt-get install libpgm-dev
+pip install faker psycopg2
+
+mkdir example
+
+#настроить адрес
+python3 populate_users.py 
+
+unixway1=> SELECT count(*) FROM users;
+unixway1=> DELETE FROM users;
+
+python3 populate_users_bug.py
+
+unixway1=> SELECT count(*) FROM users;
+unixway1=> DELETE FROM users;
+------------------------------------------------------------------------------------------------------
+CREATE TABLE items(item_pid SERIAL PRIMARY KEY, item_id UUID NOT NULL DEFAULT uuid_generate_v4(), item_name TEXT NOT NULL, item_description TEXT NOT NULL DEFAULT '', item_price NUMERIC(10,2) NOT NULL, item_registration TIMESTAMP NOT NULL DEFAULT now());  
+
+unixway1=> ALTER TABLE items ADD CHECK(length(item_name) <= 200);
+unixway1=> ALTER TABLE items ADD CHECK(length(item_description) <= 500);
+unixway1=> \d items
+
+unixway1=> ALTER TABLE items ADD CHECK(item_price > 0);
+unixway1=> \d items
+
+unixway1=> INSERT INTO items(item_name,item_description, item_price) VALUES('Blue Guitar Used / Acoustic', 'Hand made 1986 year, very good condition', 50); (7:31)
+unixway1=> INSERT INTO items(item_name, item_price) VALUES('Bass Guitar Color Red', 1000);
+------------------------------------------------------------------------------------------------------
+unixway1=> CREATE TABLE sellers(seller_pid SERIAL PRIMARY KEY,seller_id UUID NOT NULL DEFAULT uuid_generate_v4(),seller_name TEXT NOT NULL,seller_phone TEXT NOT NULL,seller_address TEXT NOT NULL,seller_registration TIMESTAMP NOT NULL DEFAULT now());
+
+unixway1=> ALTER TABLE sellers ADD CHECK(length(seller_name) <= 100 );
+unixway1=> ALTER TABLE sellers ADD CHECK(length(seller_phone) <= 50 );
+unixway1=> ALTER TABLE sellers ADD CHECK(length(seller_address) <= 150 );
+
+unixway1=> INSERT INTO sellers(seller_name, seller_phone,seller_address) VALUES('Louis De Cognac', '+8 8888888', 'Rue de Rivoli, 75001 Paris, France');
+unixway1->  ALTER TABLE items ADD seller_pid INTEGER NOT NULL REFERENCES sellers(seller_pid);
+unixway1-> DELETE FROM items;
+unixway1->  ALTER TABLE items ADD seller_pid INTEGER NOT NULL REFERENCES sellers(seller_pid);
+
+python3 populate_sellers.py 
+
+unixway1=> CREATE TABLE orders(order_pid SERIAL PRIMARY KEY,order_id UUID NOT NULL DEFAULT uuid_generate_v4(),user_pid INTEGER NOT NULL REFERENCES users(user_pid),item_pid INTEGER NOT NULL REFERENCES items(item_pid),order_price NUMERIC(10,2) NOT NULL CHECK(order_price > 0), order_registration TIMESTAMP NOT NULL DEFAULT now());
+
+unixway1=> DROP TABLE orders;
+unixway1=> DROP TABLE items;
+unixway1=> DROP TABLE sellers;
+unixway1=> DROP TABLE users;
+unixway1=> \d
+------------------------------------------------------------------------------------------------------
+CREATE TABLE users(user_pid SERIAL PRIMARY KEY,user_id UUID NOT NULL DEFAULT uuid_generate_v4(),user_name TEXT NOT NULL CHECK(length(user_name) < 100),user_email TEXT NOT NULL CHECK(length(user_email) < 100), user_registration TIMESTAMP NOT NULL DEFAULT now());
+CREATE TABLE sellers(seller_pid SERIAL PRIMARY KEY,seller_id UUID NOT NULL DEFAULT uuid_generate_v4(),seller_name TEXT NOT NULL CHECK(length(seller_name) < 100),seller_phone TEXT NOT NULL CHECK(length(seller_phone) < 50), seller_address TEXT NOT NULL CHECK(length(seller_address) < 150),seller_registration TIMESTAMP NOT NULL DEFAULT now());
+CREATE TABLE items(item_pid SERIAL PRIMARY KEY,item_id UUID NOT NULL DEFAULT uuid_generate_v4(),item_name TEXT NOT NULL CHECK(length(item_name) < 200),item_description TEXT NOT NULL DEFAULT '' CHECK(length(item_description) < 500), item_price NUMERIC(10,2) NOT NULL CHECK(item_price > 0), seller_pid INTEGER NOT NULL REFERENCES sellers(seller_pid),item_registration TIMESTAMP NOT NULL DEFAULT now());  
+CREATE TABLE orders(order_pid SERIAL PRIMARY KEY,order_id UUID NOT NULL DEFAULT uuid_generate_v4(),user_pid INTEGER NOT NULL REFERENCES users(user_pid),item_pid INTEGER NOT NULL REFERENCES items(item_pid), order_price NUMERIC(10,2) NOT NULL CHECK(order_price > 0), order_registration TIMESTAMP NOT NULL DEFAULT now());
+CREATE TABLE balances(balance_pid SERIAL PRIMARY KEY,balance_id UUID NOT NULL DEFAULT uuid_generate_v4(),user_pid INTEGER NOT NULL REFERENCES users(user_pid),balance_total NUMERIC(10,2) NOT NULL CHECK(balance_total >= 0), balance_diff NUMERIC(10,2) NOT NULL, balance_registration TIMESTAMP NOT NULL DEFAULT now());
+
+#example4
+python3 populate_users.py
+SELECT * FROM users;
+SELECT * FROM balances;
+
+python3 populate_sellers.py
+SELECT * FROM sellers;
+SELECT * FROM items;
+
+python3 populate_orders.py
+SELECT * FROM balances;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

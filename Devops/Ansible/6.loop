@@ -1,0 +1,113 @@
+---
+
+- name: Loops Playbook
+  hosts: linux3
+  become: yes
+
+  tasks:
+  - name: Say Hello to ALL
+    debug:
+      msg: Hello {{ item }}
+    loop:
+      - "Vasya"
+      - "Petya"
+      - "Masha"
+      - "Olya"
+
+  - name: Loop Until example
+    shell: echo -n Z >> myfile.txt && cat myfile.txt
+    register: output
+    delay: 2
+    retries: 10
+    until: output.stdout.find("ZZZZ") == false
+
+  - name: Print Final Output
+    debug:
+      var: output.stdout
+
+  - name: Install many packages
+    apt:
+      name: "{{ item }}"
+      update_cache: yes
+      state: present 
+    loop:
+      - python3
+      - tree
+      - default-mysql-server
+
+#-----------------------------------------------------------------------------------------
+
+---
+
+- name: Install Apache and Upload Web Page
+  hosts: all
+  become: yes
+
+  vars:
+    source_file: /root/ansible/MyWebSite2/
+    dest_file: /var/www/html
+
+  tasks:
+
+  - debug:
+      msg: "Linux version: {{ ansible_os_family }}; IP address: {{ ansible_eth0.ipv4.address }}"
+
+  - block: # ========RedHat========
+    
+      - name: Install Apache WebServer for RedHat
+        yum:
+          name: httpd
+          state: present
+
+      - name: Start Apache and Enable RedHat
+        systemd:
+          name: httpd
+          state: started
+          enabled: yes
+      
+    when: ansible_os_family=="RedHat"
+
+  - block: # ========Debian========
+
+      - name: Install Apache WebServer for Debian
+        apt:
+          name: apache2
+          state: present
+  
+      - name: Start Apache and Enable Debian
+        systemd:
+          name: apache2
+          state: started
+          enabled: yes
+    
+    when: ansible_os_family=="Debian"
+
+  - name: Copy MyHomePage to Servers Debian
+    copy:
+      src: "{{ source_file }}/{{ item }}"
+      dest: "{{ dest_file }}"
+      mode: 0644
+    loop:
+      - "index.html"
+      - "bahamas.png"
+      - "jordan.png"
+      - "newzeland.png"
+      - "Flag.png"
+            
+    notify: 
+      - Restart Apache Debian
+      - Restart Apache RedHat
+
+  handlers:
+  - name: Restart Apache Debian
+    systemd:
+      name: apache2
+      state: restarted
+    when: ansible_os_family=="Debian"
+
+  - name: Restart Apache RedHat
+    systemd:
+      name: httpd
+      state: restarted
+    when: ansible_os_family=="RedHat"
+

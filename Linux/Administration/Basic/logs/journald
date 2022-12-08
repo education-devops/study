@@ -1,0 +1,125 @@
+хранить данные:
+- /run/log/journal
+- /var/log/journal
+
+Уровни важности:
+
+0: emergency (неработоспособность системы)
+1: alerts (предупреждения, требующие немедленного вмешательства)
+2: critical (критическое состояние)
+3: errors (ошибки)
+4: warning (предупреждения)
+5: notice (уведомления)
+6: info (информационные сообщения)
+7: debug (отладочные сообщения)
+
+nano /etc/systemd/journald.conf
+
+storage			- место хранения
+
+compress		- сжимать файлы журнала
+Seal			- криптография для событий в journald
+SplitMode		- разбивать журналы по указанному принципу
+SyncIntervalSec		- интервал синхронизации между журналами в памяти и на жёстком диске
+RateLimitInterval	- сколько времени принимать сообщения
+RateLimitBurst		- лимит сообщений
+
+#Compress=yes			- сжимать файлы журнала
+#Seal=yes			- криптография для событий в journald
+#SplitMode=uid			- разбивать журналы по указанному принципу
+#SyncIntervalSec=5m		- интервал синхронизации между журналами в памяти и на жёстком диске
+#RateLimitIntervalSec=30s	- сколько времени принимать сообщения
+#RateLimitBurst=10000		- лимит сообщений в указанное время
+#SystemMaxUse=			- 
+#SystemKeepFree=		- 
+#SystemMaxFileSize=		- системные параметры
+#SystemMaxFiles=100		- 
+#RuntimeMaxUse=			
+#RuntimeKeepFree=		- параметры находящиеся в run(в оперативной памяти)
+#RuntimeMaxFileSize=
+#RuntimeMaxFiles=100
+#MaxRetentionSec=		- время хранения событий
+#MaxFileSec=1month		- когда нужно сокращать
+#ForwardToSyslog=yes
+#ForwardToKMsg=no
+#ForwardToConsole=no		- отправлять сообщения в сторонние службы
+#ForwardToWall=yes
+#TTYPath=/dev/console
+#MaxLevelStore=debug
+#MaxLevelSyslog=debug
+#MaxLevelKMsg=notice		- максимальные уровни сообщений(уровни важности)
+#MaxLevelConsole=info
+#MaxLevelWall=emerg
+#LineMax=48K
+#ReadKMsg=yes
+#Audit=no
+#-------------------------------------------------------------------------------------
+sudo journalctl
+sudo journalctl -b 				- от загрузки
+sudo journalctl --since 16:40 			- журнал загрузки от данного времени
+sudo journalctl --since 16:30 --until 16:40	- от до
+journalctl --since yesterday --until now
+
+sudo journalctl -u networking.service
+sudo journalctl -k				- события ядра
+
+journalctl -p err -b				- ошибки с момента загрузки
+journalctl -n 20				- последние 20 сообщений
+journalctl -f					- watch
+journalctl --disk-usage				- сколько занимает памяти
+
+journalctl --vacuum-size=1G			- лимит занимаемой памяти
+journalctl --vacuum-time=1years			- лимит времени
+
+
+#-------------------------------------------------------------------------------------
+#Ошибка чтения ключа при запуске в systemctl
+
+systemd-journal-remote --url http://some.host:19531/ - забирать логи из удалённых систем
+systemd-journal-upload				     - отправлять логи			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

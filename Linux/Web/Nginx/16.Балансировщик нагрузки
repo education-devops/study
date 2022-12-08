@@ -1,0 +1,101 @@
+pwd 
+/root/load_balancer
+
+echo 'PHP Server 1' > s1
+echo 'PHP Server 2' > s2
+echo 'PHP Server 3' > s3
+
+php -S localhost:10001 s1
+php -S localhost:10002 s2
+php -S localhost:10003 s3
+
+curl localhost:10001
+curl localhost:10002
+curl localhost:10003
+#-------------------------------------------------
+nano load_balancer
+
+events {}
+
+http {
+
+    upstream php_servers {
+        server localhost:10001;
+        server localhost:10002;
+        server localhost:10003;
+    }
+
+    server {
+        listen 8080;
+
+        location / {
+            proxy_pass 'http://php_servers';
+        }
+    }
+
+}
+#-------------------------------------------------
+
+nginx -c /root/load_balancer/load_balancer.conf
+
+php -S localhost:10001 s1
+php -S localhost:10002 s2
+php -S localhost:10003 s3
+
+while sleep 1; do curl http://localhost:8080; done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

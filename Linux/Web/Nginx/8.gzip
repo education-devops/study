@@ -1,0 +1,78 @@
+gzip on;
+gzip_min_length 100;
+gzip_comp_level 3;
+
+gzip_types text/plain;
+gzip_types text/css;
+gzip_types text/javascript;
+
+gzip_disable "msie6";
+
+
+
+curl -I -H 'Accept_Encoding: gzip,deflate' http://10.0.1.171/wordpress/wp-admin/css/themes.css
+
+curl -I -H 'Accept_Encoding: gzip,deflate' http://10.0.1.171/wordpress/wp-admin/css/themes.css > comp.css
+curl http://10.0.1.171/wordpress/wp-admin/css/themes.css > uncomp.css
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

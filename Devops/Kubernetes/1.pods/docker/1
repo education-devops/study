@@ -1,0 +1,30 @@
+mkdir k8sdocker
+cd k8sdocker
+
+nano k8sdocker
+
+<?php
+$ip_server = $_SERVER['SERVER_ADDR'];
+
+echo "<h1>Hello from Kubernetes</h1><br>";
+echo "Server IP Address is: $ip_server", "<br><p>";
+echo "Made by <font color=blue>Test"
+
+?>
+#------------------------------------------------------------------
+nano Dockerfile
+
+FROM debian
+
+EXPOSE 80
+
+RUN apt-get update; apt-get install apache2 php -y
+
+COPY ./index.php /var/www/html/
+
+CMD ["apache2ctl", "-D", "FOREGROUND"]
+#------------------------------------------------------------------
+docker build -t myk8sapp:latest .
+docker images
+docker tag myk8sapp:latest adv4000/k8sphp:latest
+docker images
