@@ -1,0 +1,42 @@
+upstream            backendserver {
+    server          10.10.10.132:1111;
+    server          10.10.10.123:2222;
+}
+
+server {
+    listen          8080;
+        root        /var/www/html;
+
+    location    /   {
+        proxy_pass  http://backendserver/;
+    }
+}
+---------------------------------------------------------
+#на других хостах
+
+nano /etc/nginx/sites-available/default
+
+server {
+	listen 1111;
+
+	root /var/www/html;
+
+	index index.php;
+
+	server_name _;
+
+	location / {
+		try_files $uri $uri/ =404;
+	}
+
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+	}
+}
+---------------------------------------------------------
+nano /var/www/html/index.php
+
+<?php
+echo ($_SERVER['SERVER_ADDR']), ':', ($_SERVER['SERVER_PORT']);
+?>

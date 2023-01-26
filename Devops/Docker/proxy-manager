@@ -1,0 +1,166 @@
+nano docker-compose.yml
+
+#docker run -d --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /opt/portainer/portainer_data:/data -p 8000:8000 -p 9443:9443 portainer/portainer-ce:latest
+
+version: "3.5"
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/portainer/portainer_data:/data
+    ports:
+      - "8000:8000"
+      - "9443:9443"
+    restart: always
+    networks:
+      - portainer
+
+networks:
+  portainer:
+    name: portainer
+    driver: bridge
+--------------------------------------------------------------
+# https://nginxproxymanager.com/setup/
+#portainer(add stack)
+
+name: nginx-proxy
+
+version: "3"
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+
+    networks:
+      - nginx-proxy
+      
+networks:
+  nginx-proxy:
+    name: nginx-proxy
+    driver: bridge
+
+    # Uncomment the next line if you uncomment anything in the section
+    # environment:
+      # Uncomment this if you want to change the location of 
+      # the SQLite DB file within the container
+      # DB_SQLITE_FILE: "/data/database.sqlite"
+      # как вариант
+      # DB_SQLITE_FILE: "/data/npm.sqlite"
+
+      # Uncomment this if IPv6 is not enabled on your host
+      # DISABLE_IPV6: 'true'
+
+#    volumes:
+#      - ./data:/data
+#      - ./letsencrypt:/etc/letsencrypt
+
+--------------------------------------------------------------
+10.10.10.241:81
+
+admin@example.com
+changeme
+
+cancel
+--------------------------------------------------------------
+#portainer(add stack)
+name: wordpress
+
+
+version: '3'
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - nginx-proxy
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress-service
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+    networks:
+      - nginx-proxy
+
+volumes:
+  db_data:
+
+networks:
+  nginx-proxy:
+    external: true
+--------------------------------------------------------------
+
+10.10.10.241:81
+
+hosts > add proxy hosts > details:							
+			  Domain Names: test.wordpress.test					
+			  http wordpress-service 80				
+			  +: cache assets, block common exploits, websockets support
+
+
+sudo nano /etc/hosts
+
+10.10.10.241	test.wordpress.test
+
+http://test.wordpress.test
+--------------------------------------------------------------
+app templates > nginx > name: nginx > port 8080:80
+
+10.10.10.241:81
+
+proxy hosts > add > details:							
+			  Domain Names: test.nginx.test					
+			  http 10.10.10.241 8080				
+			  +: cache assets, block common exploits, websockets support
+
+
+sudo nano /etc/hosts
+
+10.10.10.241	test.nginx.test
+
+http://test.nginx.test
+
+
+# либо
+
+app templates > nginx > name: nginx > network: nginx-proxy > удалить порты 
+
+10.10.10.241:81
+
+proxy hosts > add > details:							
+			  Domain Names: test.nginx.test					
+			  http nginx 80				
+			  +: cache assets, block common exploits, websockets support
+
+http://test.nginx.test
+--------------------------------------------------------------
+
+
+
+
+
+
+
+

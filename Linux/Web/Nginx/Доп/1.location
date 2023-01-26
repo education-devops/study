@@ -1,0 +1,39 @@
+server	{
+	listen		8080;
+	root		/var/www/html/mysite;
+
+	#Перебрасывает с /number в /count
+	rewrite ^/number/(\w+) /count/$1;
+
+		
+	location / {
+		proxy_pass http://backendserver/;
+	}
+
+	# ~* - регулярное выражение. Для ввода любых комбинаций цифр.
+	# 1. = - Полное совпадение. 2. ^~ - Префикс преимущества. 3. ~&*~ - регулярные выражения 4. Без модификатора - Совпадение префикса(без модификатора)
+	# Если в странице /count/ вводить цифры, будет перебрасывать на index.html, в другом случае ошибка 404.
+	location *~ /count/[0-9] {
+		root /var/www/html/mysite;
+		try_files /index.html =404;
+	}
+
+	location	/fruits {
+		root /var/www/html/mysite;
+	}
+
+	# alias на fruits
+	location    /carbs {
+            	alias	/var/www/html/mysite/fruits;
+        }
+		
+	location    /vegetables {
+        root /var/www/html/mysite;
+		try_files /vegetables/veggies.html /index.html =404;
+        }
+
+	# Перебрасывает на fruits
+	location /crops {
+		return 307 /fruits;
+	}
+}

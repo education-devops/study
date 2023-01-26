@@ -1,0 +1,23 @@
+SELECT NOW();
+SELECT NOW()::DATE;
+SELECT NOW()::TIME;
+
+#Один год назад
+SELECT NOW() - INTERVAL '1 YEAR';
+SELECT NOW() - INTERVAL '100 YEAR';
+SELECT NOW() - INTERVAL '10 MONTH';
+SELECT NOW() - INTERVAL '10 DAYS';
+
+SELECT NOW() + INTERVAL '100 YEAR';
+SELECT NOW() + INTERVAL '100 MONTH';
+
+#День недели
+SELECT EXTRACT(DOW FROM NOW());
+SELECT EXTRACT(DAY FROM NOW());
+SELECT EXTRACT(MONTH FROM NOW());
+SELECT EXTRACT(YEAR FROM NOW());
+
+#Высчитывает сколько лет
+SELECT first_name, last_name, gender, country_of_birth, date_of_birth, AGE(NOW(), date_of_birth) AS age FROM employee;
+
+

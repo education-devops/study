@@ -1,0 +1,12 @@
+location /downloads {
+
+	#Отключить логи
+        access_log off;
+        error_log off;
+
+	#Отдельный лог
+        error_log /var/log/nginx/downloads.error.log debug;
+
+        root /var/www/html/sites;
+	try_files $uri =404;
+}

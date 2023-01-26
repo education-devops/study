@@ -1,0 +1,73 @@
+sudo apt-get install libgd-dev
+
+mkdir -p /var/nginx/cache
+mkdir /var/www/html/img
+
+wget https://mobimg.b-cdn.net/v3/fetch/dd/dd7be29c97978e6f1953f63938c44910.jpeg
+wget https://w7.pngwing.com/pngs/540/48/png-transparent-green-tree-illustration-natural-resource-conservation-nature-natural-environment-nature-essay-grass-natural-science.png
+
+mv dd7be29c97978e6f1953f63938c44910.jpeg 1.jpeg
+mv png-transparent-green-tree-illustration-natural-resource-conservation-nature-natural-environment-nature-essay-grass-natural-science.png 2.png
+#---------------------------------------------------------------------------
+nano /etc/nginx/sites-enabled/default-cache
+
+server  {
+
+	listen      80 default_server;
+        root        /var/www/html;
+
+	index	index.html	index.htm	index.nginx-debian.html;
+
+	server_name _;
+
+#	location ~ ^/img/(?<width>100|200|300|400|-)x(?<height>100|200|300|-)/(?<file>.+)$ {
+	location ~ ^/img/(?<width>\d+)x(?<height>\d+|-)/(?<file>.+)$ {
+		proxy_pass		http://localhost:8080;
+		proxy_cache		thumbs;
+		proxy_cache_lock	on;
+		proxy_cache_valid	200	24h;
+		proxy_cache_valid	404	415	1m;
+	}
+
+	location / {
+		try_files $uri $uri/ =404;
+	}
+}
+
+server {
+
+	listen 8080 default_server;
+
+	root	/var/www/html;
+	
+	server_name _;
+
+        location ~ ^/img/(?<width>\d+)x(?<height>\d+|-)/(?<file>.+)$ {
+                image_filter resize $width $height;
+		image_filter_interlace	on;
+                image_filter_jpeg_quality 85;
+                image_filter_webp_quality 85;
+		image_filter_buffer	10M;
+
+                alias   /var/www/html/img/$file;
+                error_page  415 = /empty;
+        }
+
+        location = /empty {
+            empty_gif;
+        }
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+}
+#---------------------------------------------------------------------------
+nano /etc/nginx/nginx.conf
+
+http {
+proxy_cache_path  /var/nginx/cache levels=1:2 keys_zone=thumbs:10m inactive=24h max_size=16;
+}
+
+
+
+

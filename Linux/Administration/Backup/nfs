@@ -1,0 +1,37 @@
+#server
+
+sudo apt-get install nfs-kernel-server
+
+sudo mkdir /var/nfs
+sudo chmod -R 777 /var/nfs
+
+sudo nano /etc/exports
+
+/var/nfs 10.10.10.175(rw,sync,no_subtree_check,no_root_squash)
+
+
+#client
+
+sudo apt-get install nfs-common 
+sudo systemctl status nfs-common
+
+sudo systemctl enable nfs-common
+#Покажет символическую ссылку юнита, которую нужно удалить:
+sudo unlink /lib/systemd/system/nfs-common.service
+
+sudo systemctl enable nfs-common
+sudo systemctl restart nfs-common
+sudo systemctl status nfs-common
+
+sudo shownmount -e 10.10.10.241
+
+sudo mkdir -p /var/share/nfs
+sudo nano /etc/fstab
+
+10.10.10.241:/var/nfs /var/share/nfs	nfs4	defaults,user,exec	0	0
+
+#server, client
+sudo systemctl restart nfs-common
+
+#client
+sudo mount /var/share/nfs

@@ -1,0 +1,91 @@
+sudo apt-get update; sudo apt-get install dovecot-imapd -y
+nano /etc/dovecot/conf.d/10-auth.conf
+disable_plaintext_auth = no
+...
+nano /etc/dovecot/conf.d/10-mail.conf
+Убедиться, что
+mail_privileged_group = mail
+Проверяем корректность:
+dovecot -n
+systemctl restart dovecot
+#--------------------------------------------------------
+#Вариант сборки
+
+sudo apt-get update; sudo apt-get install apache2 mariadb-client mariadb-server -y
+sudo apt-get install libapache2-mod-php php php-intl php-ldap php-gd php-imagick php-dom php-mbstring php-mysqli php-zip php-curl -y
+
+wget https://github.com/roundcube/roundcubemail/releases/download/1.5.3/roundcubemail-1.5.3-complete.tar.gz -O roundcube.tar.gz
+tar xfz roundcube.tar.gz
+
+mkdir /usr/share/webmail
+cp -r roundcubemail-1.5.3/* /usr/share/webmail/
+ln -s /usr/share/webmail/ /var/www/html/
+chown -R www-data:www-data /usr/share/webmail/
+echo "date.timezone = 'Europe/Moscow'" >>  /etc/php/7.4/apache2/php.ini
+systemctl restart apache2
+
+mysql -u root -p
+
+CREATE DATABASE roundcubemail;
+USE roundcubemail;
+CREATE USER 'roundcube'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON roundcubemail.* to 'roundcube'@'localhost';
+exit;
+#--------------------------------------------------------
+nano /usr/share/webmail/config/config.inc.php
+$config['db_dsnw'] = 'mysql://roundcube:password@localhost/roundcubemail';
+
+http://10.0.1.171/webmail/installer/
+
+потом удалить папку /usr/share/webmail/installer/
+
+http://10.0.1.171/webmail
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Вариант обычной установки
+sudo apt-get install mariadb-server mariadb-server -y
+
+mysql -u root -p
+
+CREATE DATABASE roundcubemail;
+USE roundcubemail;
+CREATE USER 'roundcube'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON roundcubemail.* to 'roundcube'@'localhost';
+exit;
+#--------------------------------------------------------
+sudo apt-get install roundcube roundcube-mysql -y
+
+cd /usr/share/dbconfig-common/data/roundcube/install
+mysql -u roundcube -D roundcubemail -p < mysql
+
+nano /etc/roundcube/config.inc.php
+
+$config['default_host'] = 'localhost';
+
+$config['smtp_server'] = 'localhost';
+
+$config['smtp_port'] = 25;
+
+$config['db_dsnw'] = 'mysql://roundcube:password@localhost/roundcubemail';
+
+# $config['smtp_user] =
+# $config['smtp_password'] =
+#--------------------------------------------------------
+nano /etc/apache2/conf-enabled/roundcube.conf
+
+Alias /roundcube /var/lib/roundcube
+#--------------------------------------------------------
+echo "date.timezone = 'Europe/Moscow'" >>  /etc/php/7.4/apache2/php.ini
+#--------------------------------------------------------
+systemctl restart apache2
+#--------------------------------------------------------
+
+
+http://10.0.1.171/roundcube
+
+
+
+
+
+
+
+

@@ -1,0 +1,16 @@
+stages:
+  - ssh
+
+test_job_ci:
+  stage: ssh
+#  before_script:
+  script:
+        - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+        - eval $(ssh-agent -s)
+        - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -		# Добавить внутренний ssh ключ в variables
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        - ssh-keyscan gitlab.example.com >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+  tags:
+    - ssh

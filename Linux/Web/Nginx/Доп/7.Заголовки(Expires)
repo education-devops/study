@@ -1,0 +1,11 @@
+#Кэширует заголовки
+
+location ~* \.(css|js|jpg|png|gif)$ {
+                access_log off;
+                expires 1M;
+                add_header Pragma public;
+                add_header Cache-Control public;
+                add_header Vary Accept-Encoding;
+        }
+
+curl -I http://10.0.1.171/wordpress/wp-admin/css/themes.css

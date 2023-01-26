@@ -1,0 +1,21 @@
+CREATE TABLE bicycle (
+id BIGSERIAL NOT NULL PRIMARY KEY,
+make VARCHAR(100) NOT NULL,
+type VARCHAR(100) NOT NULL,
+price NUMERIC(19,2) NOT NULL
+);
+
+\d employee
+ALTER TABLE employee ADD bicycle_id BIGINT REFERENCES bicycle (id);
+ALTER TABLE employee ADD UNIQUE (bicycle_id);
+\d employee
+
+INSERT INTO bicycle (make, type, price) VALUES ('Indi ATB', 'Mountain Bike', '100.00');
+INSERT INTO bicycle (make, type, price) VALUES ('Apollo Cafe', 'Women Hybrid Bike', '160.00');
+INSERT INTO bicycle (make, type, price) VALUES ('Brompton', 'Folding Bike', '1045.00');
+
+SELECT * FROM employee LIMIT(10);
+SELECT * FROM bicycle;
+
+UPDATE employee SET bicycle_id = 2 WHERE id = 4;
+SELECT * FROM employee where id = 4;

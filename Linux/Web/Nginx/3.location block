@@ -1,0 +1,159 @@
+nano /home/user1/mysite/styles.css
+
+h1 {
+    background-color: pink;
+    color: aqua;
+}
+
+----------------------------------------------------------------
+nano /home/user1/mysite/index.html
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <title> MY NGINX project </title>
+        <link rel="stylesheet" href="./styles.css" />
+    </head>
+    <body>
+        <h1>Hello NGINX!!!</h1>
+    </body>
+</html>
+
+----------------------------------------------------------------
+mkdir fruits
+nano fruits/index.html
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <title> MY NGINX project </title>
+    </head>
+    <body>
+        <ul>
+            <li>Mango</li>
+            <li>Strawberry</li>
+            <li>Watermelon</li>
+        </ul>
+    </body>
+</html>
+
+----------------------------------------------------------------
+mkdir vegetables
+nano vegetables/veggies.html
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <title> MY NGINX project </title>
+    </head>
+    <body>
+        <ul>
+            <li>Lettuce</li>
+            <li>Eggplant</li>
+            <li>Onion</li>
+        </ul>
+    </body>
+</html>
+
+----------------------------------------------------------------
+nano /etc/nginx/nginx.conf
+
+http {
+
+    include mime.types;
+
+    server {
+        listen          8080;
+        root            /home/user1/mysite/;
+
+        location        /fruits {
+            root        /home/user1/mysite;
+        }
+
+        # Дублирует
+        location        /carbs {
+            alias       /home/user1/mysite/fruits;
+        }
+
+        location        /vegetables {
+            root        /home/user1/mysite;
+            try_files   /vegetables/veggies.html    /index.html     =404;
+
+        }
+
+        location ~*     /count/[0-9] {
+            root        /home/user1/mysite;
+            try_files   /index.html     =404;
+        }
+
+    }
+}
+
+events {}
+
+----------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

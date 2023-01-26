@@ -1,0 +1,18 @@
+sudo apt-get install bridge-utils
+
+brctl addbr RunOnce
+brctl addif RunOnce enp7s0
+
+ip link show RunOnce
+ip link set RunOnce up
+ip link set enp7s0 up
+
+ip addr add 192.168.1.24/24 dev RunOnce
+
+brctl show
+
+ip link set RunOnce down
+ip link set enp7s0 down
+
+brctl delif RunOnce enp7s0
+brctl delbr RunOnce

@@ -1,0 +1,64 @@
+SELECT * FROM employee WHERE email LIKE '%yahoo%' AND country_of_birth = 'Poland';
+DELETE FROM employee WHERE email LIKE '%yahoo%' AND country_of_birth = 'Poland';
+
+UPDATE employee SET email = 'test@mail.com' WHERE id = 3;
+SELECT * FROM employee WHERE id = 3;
+
+UPDATE employee SET first_name = 'Jane', last_name = 'Doe', email = 'JD@gmail.com' WHERE id = 3;
+SELECT * FROM employee WHERE id = 3;
+
+INSERT INTO employee (id, first_name, last_name, gender, email, date_of_birth, country_of_birth) VALUES (3, 'Elizabeth', 'Doe', 'female', 'JD@google.com', '1967-12-20', 'Vatican City') ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, first_name = EXCLUDED.first_name;
+SELECT * FROM employee WHERE id = 3;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

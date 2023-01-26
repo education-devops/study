@@ -1,0 +1,56 @@
+SELECT * FROM employee;
+SELECT FROM employee;
+
+SELECT first_name FROM employee;
+SELECT first_name, last_name FROM employee;
+SELECT email FROM employee;
+
+#ORDER BY - отсортировать по
+SELECT * FROM employee ORDER BY country_of_birth;
+
+#ASC - по нарастающей
+SELECT * FROM employee ORDER BY country_of_birth ASC;
+
+#DESC - в убывающей
+SELECT * FROM employee ORDER BY country_of_birth DESC;
+SELECT * FROM employee ORDER BY email DESC;
+SELECT * FROM employee ORDER BY date_of_birth DESC;
+
+SELECT country_of_birth FROM employee ORDER BY country_of_birth;
+
+#DISTINCT - отсеивает дубли
+SELECT DISTINCT country_of_birth FROM employee ORDER BY country_of_birth;
+
+SELECT * FROM employee WHERE gender = 'FEMALE';
+SELECT * FROM employee WHERE gender = 'FEMALE' AND country_of_birth = 'USA';
+SELECT * FROM employee WHERE gender = 'FEMALE' AND (country_of_birth = 'USA' OR country_of_birth = 'UK');
+
+SELECT * FROM employee LIMIT 5;,
+SELECT * FROM employee OFFSET 5 LIMIT 5;
+#То же, что и предыдущее значение.
+SELECT * FROM employee OFFSET 5 FETCH FIRST 5 ROW ONLY; 
+#================================================================================================================
+SELECT * FROM employee WHERE country_of_birth = 'Brazil' OR country_of_birth = 'UK' OR country_of_birth = 'Italy';
+SELECT * FROM employee WHERE country_of_birth IN ('Brazil', 'UK', 'Italy');
+
+SELECT * FROM employee WHERE date_of_birth BETWEEN '2010-01-01' AND '2020-01-01';
+
+SELECT * FROM employee WHERE email LIKE '%.com';
+SELECT * FROM employee WHERE email LIKE '%@mail.com';
+SELECT * FROM employee WHERE email LIKE '%@mail.%';
+
+SELECT * FROM employee WHERE country_of_birth LIKE 'U%';
+SELECT * FROM employee WHERE country_of_birth LIKE 'F%';
+
+#Пересчитать
+SELECT country_of_birth, COUNT(*) FROM employee GROUP BY country_of_birth;
+SELECT first_name, COUNT(*) FROM employee GROUP BY first_name;
+
+SELECT country_of_birth, COUNT(*) FROM employee GROUP BY country_of_birth HAVING COUNT(*) > 1;
+SELECT country_of_birth, COUNT(*) FROM employee GROUP BY country_of_birth HAVING COUNT(*) > 1 ORDER BY country_of_birth ASC;
+
+# Заменить заголовки
+SELECT id, first_name AS name, last_name AS surname, gender AS sex, email, date_of_birth, country_of_birth FROM employee;
+
+# Заменить пустую строку
+SELECT COALESCE(email, 'not applicable') FROM employee;

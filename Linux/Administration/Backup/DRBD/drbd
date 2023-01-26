@@ -1,0 +1,93 @@
+#nodeN
+
+sudo apt-get install drbd-utils
+
+sudo nano /etc/drbd.d/r0.res
+
+resource r0 {
+        syncer { rate 1000M; }
+        handlers {
+                split-brain "/usr/lib/drbd/notify-split-brain.sh root";
+        }
+        on ns.example.org {
+                device /dev/drbd0;
+                disk /dev/vdb;
+#                disk /dev/sdb1; 
+#                address 10.Z.M.100+X:7788;
+                address 192.168.1.1:7788;
+                meta-disk internal;
+        }
+        on ns2.example.org {
+                device /dev/drbd0;
+                disk /dev/vdb;
+#                disk /dev/sdb1;  
+#                address 10.Z.M.200+X:7788;
+                address 192.168.1.102:7788;
+                meta-disk internal;
+        }
+}
+#------------------------------------------------------------------------------------------
+#node1
+#В случае ошибки посмотреть uname -a(hostname)
+sudo drbdadm create-md r0
+
+sudo mkdir /disk2
+sudo systemctl start drbd
+sudo drbdadm -- -overwrite-data-of-peer primary r0
+cat /proc/drbd
+
+sudo mkfs.ext4 /dev/drbd0
+sudo mount /dev/drbd0 /disk2/
+
+ls /disk2/
+sudo cp /etc/hostname /disk2/
+
+sudo drbdadm secondary r0
+sudo umount /disk2
+
+sudo systemctl enable drbd.service
+#------------------------------------------------------------------------------------------
+#node2
+sudo mkdir /disk2
+sudo drbdadm primary r0
+sudo mount /dev/drbd0 /disk2/
+cat /disk2/hostname
+
+sudo drbdadm secondary r0
+sudo umount /disk2
+
+sudo systemctl enable drbd.service
+#------------------------------------------------------------------------------------------
+#Split-brain
+
+sudo systemctl stop drbd.service
+sudo drbdadm invalidate r0
+sudo drbdadm create-md r0
+sudo systemctl start drbd.service
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

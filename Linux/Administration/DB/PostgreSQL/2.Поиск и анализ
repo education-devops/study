@@ -1,0 +1,143 @@
+\l+
+\d+
+
+SELECT * FROM users;
+\d users
+
+SELECT user_pid,user_id,user_name,user_email,user_registration FROM users;
+SELECT user_id,user_name,user_email FROM users;
+
+SELECT * FROM sellers;
+SELECT * FROM items;
+SELECT item_pid,item_id,item_price FROM items;
+SELECT * FROM orders;
+
+SELECT * FROM orders ORDER BY order_price DESC; - максимум
+SELECT * FROM orders ORDER BY order_price ASC;	- минимум
+SELECT * FROM orders ORDER BY random();
+
+SELECT * FROM items ORDER BY random();
+SELECT item_id FROM items ORDER BY random();
+
+SELECT * FROM users ORDER BY random();
+
+SELECT * FROM users WHERE user_name LIKE '%Alfred%';
+SELECT * FROM users WHERE user_name LIKE '%Dr.%';
+
+SELECT item_id,item_name FROM items WHERE item_name LIKE '% new %';
+SELECT item_id, item_name, item_description FROM items WHERE item_name LIKE '% new %' OR item_description LIKE '% new %';
+SELECT * FROM items WHERE item_id = '55f9951b-0876-4edc-9c7c-84cdd906e198';
+
+SELECT * FROM items WHERE item_price < 2.0;
+
+SELECT * FROM sellers;
+
+\d items
+\d sellers
+SELECT * FROM sellers INNER JOIN items USING(seller_pid);
+SELECT * FROM sellers AS s INNER JOIN items AS i USING(seller_pid);
+SELECT s.seller_id, i.item_id FROM sellers AS s INNER JOIN items AS i USING(seller_pid);
+SELECT i.item_id FROM sellers AS s INNER JOIN items AS i USING(seller_pid) WHERE s.seller_id = '06bd94e2-a80b-4c0a-8fe5-90721a123729';
+SELECT i.item_id FROM sellers AS s INNER JOIN items AS i ON s.seller_pid = i.seller_pid WHERE s.seller_id = '06bd94e2-a80b-4c0a-8fe5-90721a123729';
+SELECT s.seller_id, i.item_id FROM sellers AS s INNER JOIN items AS i ON s.seller_pid = i.seller_pid WHERE s.seller_id = '06bd94e2-a80b-4c0a-8fe5-90721a123729';
+
+SELECT i.item_pid, o.item_pid FROM items AS i LEFT JOIN orders AS o ON i.item_pid = o.item_pid WHERE o.item_pid IS NULL;
+SELECT count(1) FROM items AS i LEFT JOIN orders AS o ON i.item_pid = o.item_pid WHERE o.item_pid IS NULL;
+
+SELECT * FROM orders AS o WHERE o.item_pid = 30;
+SELECT * FROM orders WHERE item_pid = '30';
+
+SELECT u.user_pid, o.user_pid FROM users AS u LEFT JOIN orders AS o ON u.user_pid = o.user_pid WHERE o.user_pid IS NULL;
+SELECT count(*) FROM users AS u LEFT JOIN orders AS o ON u.user_pid = o.user_pid WHERE o.user_pid IS NULL;
+
+SELECT u.user_id FROM users AS u;
+SELECT u.user_id, b.balance_total, b.balance_diff, b.balance_registration FROM users AS u INNER JOIN balances AS b ON u.user_pid = b.user_pid WHERE u.user_id = '30bfe82d-bc5a-480d-a9f3-33c09c49e5ac' ORDER BY b.balance_registration DESC;
+SELECT u.user_id, b.balance_total, b.balance_diff, b.balance_registration FROM users AS u INNER JOIN balances AS b ON u.user_pid = b.user_pid WHERE u.user_id = '30bfe82d-bc5a-480d-a9f3-33c09c49e5ac' ORDER BY b.balance_registration DESC LIMIT 1;
+--------------------------------------------------------------------
+SELECT now();
+SELECT uuid_generate_v4();
+SELECT count(*) FROM orders;
+SELECT count(user_pid) FROM orders;
+SELECT count(1) FROM orders;
+
+SELECT count(1) FROM orders WHERE order_price > 45 AND order_price < 55;
+SELECT count(1) FROM orders WHERE order_price >= 45 AND order_price <= 55;
+SELECT count(1) FROM orders WHERE order_price BETWEEN 45 AND 55;
+
+SELECT now() FROM users;
+
+SELECT min(order_price) FROM orders;
+SELECT max(order_price) FROM orders;
+SELECT avg(order_price) FROM orders;
+SELECT sum(order_price)/count(1) FROM orders;
+SELECT min(order_price), max(order_price), avg(order_price) FROM orders;
+SELECT min(order_price), max(order_price), avg(order_price), sum(order_price) FROM orders;
+
+SELECT sum(order_price)/count(1), now() FROM orders;
+SELECT o.item_pid, count(1) AS order_counts FROM orders AS o GROUP BY o.item_pid ORDER BY order_counts DESC;
+SELECT i.item_id, count(1) AS order_counts FROM orders AS o INNER JOIN items AS i ON o.item_pid = i.item_pid GROUP BY i.item_id ORDER BY order_counts DESC;
+SELECT s.seller_name, sum(o.order_price) AS order_sums FROM orders AS o INNER JOIN items AS i ON o.item_pid = i.item_pid INNER JOIN sellers AS s ON i.seller_pid = s.seller_pid GROUP BY s.seller_name ORDER BY order_sums DESC;
+SELECT s.seller_id, s.seller_name, sum(o.order_price) AS order_sums FROM orders AS o INNER JOIN items AS i ON o.item_pid = i.item_pid INNER JOIN sellers AS s ON i.seller_pid = s.seller_pid GROUP BY s.seller_id, s.seller_name ORDER BY order_sums DESC;
+
+SELECT u.user_id, b.balance_total, b.balance_diff, b.balance_registration FROM users AS u INNER JOIN balances AS b ON u.user_pid = b.user_pid WHERE b.balance_total = 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

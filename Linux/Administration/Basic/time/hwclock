@@ -1,0 +1,15 @@
+#Поменять на любое время
+sudo hwclock --set --date="01/01/2023 12:00"
+sudo init 6
+sudo hwclock
+date
+
+#Синхронизация с аппаратным временем
+sudo hwclock -w
+
+#Менять время на локальное или международное
+sudo hwclock --localtime -w
+cat /etc/adjtime
+
+sudo hwclock --utc -w
+cat /etc/adjtime

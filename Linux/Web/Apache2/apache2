@@ -1,0 +1,55 @@
+# Версия apache
+apachectl -v
+
+# Подробная информация
+apachectl -V
+
+# Проверка синтаксиса
+apachectl -t
+
+# Доступные модули
+apachectl -L
+
+# Общие модули
+apachectl -l
+
+# Включённые модули
+apachectl -M
+
+# Проверка кода
+apachectl configtest
+
+# Перечитывание конфигурации
+apachectl graceful
+
+a2ensite, a2dissite - активировать или деактивировать сайт/хост
+a2enconf, a2disconf - активировать или деактивировать файл конфигурации
+a2enmod, a2dismod   - активировать или деактивирвать модуль
+a2query		    - возвращает различиную информацию из текущей конфигурации
+
+#---------------------------------------------------------------
+nano /etc/apache2/sites-available/php-test.conf
+
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        ServerName example.com
+        ServerAlias test.example.com
+        DocumentRoot /var/www/php-test.com/
+        ErrorLog /var/log/apache2/php-test.com/error.log
+        CustomLog /var/log/apache2/php-test.com/access.log combined
+
+</VirtualHost>
+
+<VirtualHost *:443>
+        ServerName 10.10.10.136
+        DocumentRoot /var/www/php-test.com
+        SSLEngine on
+        SSLCertificateFile /etc/apache2/ssl/cert.crt
+        SSLCertificateKeyFile /etc/apache2/ssl/cert.key
+</VirtualHost>
+#---------------------------------------------------------------
+mkdir /var/www/php-test.com/
+mkdir /var/log/apache2/php-test.com/
+
+sudo a2ensite php-test.conf
+sudo apachectl configtest

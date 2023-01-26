@@ -1,0 +1,24 @@
+git add . 
+git commit -m ""
+
+git branch <name>
+git branch -d <name>
+
+git checkout <name>
+git checkout -b <name>
+
+git push origin
+
+git log --graph
+git log -1 -p
+
+git diff --staged
+
+git commit --amend
+git commit --amend -c <hash>
+
+git reset --hard HEAD~
+git reset --soft HEAD~
+
+git merge
+git rebase

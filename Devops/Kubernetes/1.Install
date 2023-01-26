@@ -1,0 +1,43 @@
+sudo apt-get update && sudo apt-get install apt-transport-https curl gnupg gnupg1 gnupg2 -y
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install kubeadm kubectl -y
+#================================================================================================
+# либо 
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+
+# либо 
+curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.25.0/bin/linux/amd64/kubectl
+#================================================================================================
+#последняя версия
+cd /usr/local/bin/
+sudo curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+  && sudo chmod +x minikube
+
+#через git
+https://github.com/kubernetes/minikube/releases
+#================================================================================================
+
+sudo swapoff -a
+
+minikube start --driver=docker
+kubectl get componentstatus
+kubectl cluster-info
+minikube stop
+minikube delete
+
+minikube start --cpus=4 --memory=8gb --driver=docker
+minikube ssh
+docker exec -it minikube bash
+
+#для локального запуска
+minikube docker-env
+eval $(minikube -p minikube docker-env)
+
+#в последующем нужно добавить в yaml файле под image 
+imagePullPolicy: Never
+
+#Переброска портов с локальной сети
+sudo sysctl -w net.ipv4.conf.all.route_localnet=1
+sudo iptables -t nat -A PREROUTING -i enp1s0 -p tcp -m tcp --dport 7788 -j DNAT --to-destination 127.0.0.1:7788

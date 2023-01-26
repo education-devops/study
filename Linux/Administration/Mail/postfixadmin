@@ -1,0 +1,134 @@
+sudo apt-get update; sudo apt install mariadb-server mariadb-client apache2 libapache2-mod-php php php-imap php-mysql php-mbstring -y
+#---------------------------------------------------------------------------
+sudo mysql -u root -p
+#---------------------------------------------------------------------------
+create database postfix;
+create user postfix@localhost identified by 'password';
+grant all privileges on *.* to postfix@localhost;
+exit
+#---------------------------------------------------------------------------
+wget https://sourceforge.net/projects/postfixadmin/files/latest/download -O postfixadmin.tar.gz
+tar -zxf postfixadmin.tar.gz
+sudo mv postfixadmin-* /usr/share/postfixadmin
+mkdir /usr/share/postfixadmin/templates_c
+#---------------------------------------------------------------------------
+sudo chown -R www-data:www-data /usr/share/postfixadmin/
+sudo ln -s /usr/share/postfixadmin/public/ /var/www/html/postfixadmin
+
+#---------------------------------------------------------------------------
+sudo nano /usr/share/postfixadmin/config.local.php
+
+<?php
+$CONF['configured'] = true;
+$CONF['setup_password'] = 'нужно изменить после запуска';
+$CONF['default_language'] = 'ru';
+$CONF['database_type'] = 'mysqli';
+$CONF['database_host'] = 'localhost';
+$CONF['database_user'] = 'postfix';
+$CONF['database_password'] = 'password';
+$CONF['database_name'] = 'postfix';
+$CONF['admin_email'] = 'root@example.com';
+$CONF['encrypt'] = 'md5crypt';
+$CONF['default_aliases'] = array (
+ 'abuse' => 'root',
+ 'hostmaster' => 'root',
+ 'postmaster' => 'root',
+ 'webmaster' => 'root'
+);
+$CONF['domain_path'] = 'YES';
+$CONF['domain_in_mailbox'] = 'YES';
+?>
+#---------------------------------------------------------------------------
+mysql для MySQL 3.23 и 4.0, 4.1 или 5;
+mysqli для MySQL 4.1+ или MariaDB;
+pgsql для PostgreSQL;
+sqlite для SQLite 3.
+#---------------------------------------------------------------------------
+md5crypt;
+md5;
+system — учетная запись по умолчанию, от которой работает PHP;
+cleartext — это простой открытый текст (не рекомендуется, т.к. пропадает смысл использования базы данных для повышения безопасности);
+mysql_encrypt используется для интеграции с PAM;
+authlib использует пароли типа courier-authlib и требует установки значения параметра $CONF[‘authlib_default_flavor’];
+dovecot:CRYPT-METHOD использует зашифрованный пароль из dovecot, например, dovecot:CRAM-MD5;
+php_crypt:CRYPT-METHOD:DIFFICULTY:PREFIX использует встроенную в PHP функцию шифрования. Пример: php_crypt:SHA512:50000
+php_crypt CRYPT-METHOD: Поддерживаемые значения DES, MD5, BLOWFISH, SHA256, SHA512;
+php_crypt DIFFICULTY поддерживает значения BLOWFISH:4-31, SHA256:1000-999999999, SHA512:1000-999999999;
+#---------------------------------------------------------------------------
+‘abuse’ => ‘abuse@your.example.com’;
+‘hostmaster’ => ‘hostmaster@your.example.com’;
+‘postmaster’ => ‘postmaster@your.example.com’;
+‘webmaster’ => ‘webmaster@your.example.com’.
+#---------------------------------------------------------------------------
+#Сгенерировать пароль и скопировать хэш в nano /usr/share/postfixadmin/config.local.php => $CONF['setup_password']
+#Зайти по паролю и создать админа
+http://<адрес сервера>/postfixadmin/setup.php
+
+#login
+http://<адрес сервера>/postfixadmin
+Добавить домен, создать ящик
+#---------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

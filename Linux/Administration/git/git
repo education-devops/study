@@ -1,0 +1,131 @@
+git config --global --edit
+
+mkdir git-dir
+cd git-dir/
+git status
+
+git init 
+git status
+
+touch file01 file02
+git status
+
+echo line01 > file01
+
+git -am "init commit"
+
+echo line02 >> file01
+
+git diff file01
+git restore file01
+
+echo line02 >> file01
+
+git add .
+git diff --staged file01
+git restore --staged file01
+
+git commit -am "Add line & test in file01"
+#--------------------------------------------------------
+#gitigonre
+
+nano .gitignore
+
+tmp
+*.log
+#--------------------------------------------------------
+git add .
+git commit -am "add gitignore"
+
+mkdir tmp
+touch access.log
+
+git status
+#--------------------------------------------------------
+git log
+git show a82000661a8bcf4ab4603049ff5bce22c9495f33
+
+#Вернуться по хэшу
+git log
+git checkout df91f0a85e2c4f1f547a8ec38d5a0d42538f27e4
+#--------------------------------------------------------
+#Жесткий переход
+git log
+git reset --hard a82000661a8bcf4ab4603049ff5bce22c9495f33
+
+#Вернуться обратно
+git reset --hard ORIG_HEAD
+#--------------------------------------------------------
+git branch DEV
+git branch
+git checkout DEV
+git branch
+echo test0001 > file02
+echo test0002 >> file02
+echo test0003 >> file02
+git status
+git add .
+git commit -am "add file02"
+
+git checkout master
+cat file02
+
+git checkout DEV
+cat file02
+
+git checkout master
+git merge DEV
+git branch -d DEV
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+https://www.ntppool.org/zone/ru
+
+#Для примера
+sudo ntpdate 0.ru.pool.ntp.org
+
+sudo apt-get install ntp
+
+#-------------------------------------
+sudo nano /etc/ntp.conf
+
+server 0.ru.pool.ntp.org
+server 1.ru.pool.ntp.org
+server 2.ru.pool.ntp.org
+server 3.ru.pool.ntp.org
+#-------------------------------------
+sudo systemctl restart ntp
+
+ntpq -pn
+
+
+
+
+
+
+

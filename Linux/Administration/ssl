@@ -1,0 +1,11 @@
+openssl genrsa -out ca.key 4096
+openssl req -new -x509 -sha256 -days 3650 -key ca.key -out ca.crt -subj "/CN=example.com/O=A_test/ST=Some-State/C=AU"
+#openssl x509 -noout -text -in ca.crt
+
+openssl genrsa -out cert.key 4096
+openssl req -new -sha256 -subj "/CN=example.com/O=A_test/ST=Some-State/C=AU" -key cert.key -out cert.csr
+
+echo "subjectAltName=DNS:*.example.com" >> extfile.cnf
+
+openssl x509 -req -sha256 -days 3650 -in cert.csr -CA ca.crt -CAkey ca.key -out cert.crt -extfile extfile.cnf -CAcreateserial
+#openssl x509 -noout -text -in cert.crt

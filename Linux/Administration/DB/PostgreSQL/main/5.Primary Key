@@ -1,0 +1,13 @@
+#Удаляем уникальный ограничитель
+ALTER TABLE employee DROP CONSTRAINT employee_pkey;
+
+#Дублируем первую позицию, ставим вручную номер id
+INSERT INTO employee (id, first_name, last_name, gender, email, date_of_birth, country_of_birth) VALUES (1, 'Monet', 'Sharpe', 'male', 'vincenzaschaeffer@gmail.com', '1965-04-29', 'Sri Lanka');
+
+#Удалит две позиции
+DELETE FROM employee WHERE id = 1;
+INSERT INTO employee (id, first_name, last_name, gender, email, date_of_birth, country_of_birth) VALUES (1, 'Monet', 'Sharpe', 'male', 'vincenzaschaeffer@gmail.com', '1965-04-29', 'Sri Lanka');
+ALTER TABLE employee ADD PRIMARY KEY(id);
+
+#Зафиксировать последнее id, для дальнейшего корректного добавления
+SELECT setval('employee_id_seq', 100, true);

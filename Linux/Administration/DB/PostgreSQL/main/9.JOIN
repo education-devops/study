@@ -1,0 +1,29 @@
+#LEFT - для общего вывода, INNER - выборка, RIGHT - дополнительная информация, FULL OUTER - полная выборка
+
+SELECT * FROM employee 
+JOIN bicycle ON employee.bicycle_id = bicycle_id;
+
+SELECT employee.first_name, bicycle.make, bicycle.type, bicycle.price
+FROM employee
+JOIN bicycle ON employee.bicycle_id = bicycle.id;
+
+#Выборка
+SELECT * FROM employee
+LEFT JOIN bicycle
+ON bicycle.id = employee.bicycle_id WHERE bicycle_id IS NOT NULL;
+
+SELECT * FROM employee
+INNER JOIN bicycle
+ON bicycle.id = employee.bicycle_id WHERE bicycle_id IS NOT NULL;
+
+SELECT * FROM employee
+INNER JOIN bicycle
+ON bicycle.id = employee.bicycle_id;
+
+SELECT * FROM employee
+RIGHT JOIN bicycle
+ON bicycle.id = employee.bicycle_id;
+
+SELECT * FROM employee
+FULL OUTER JOIN bicycle
+ON bicycle.id = employee.bicycle_id;

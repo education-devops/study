@@ -1,0 +1,80 @@
+ansible all -m ping
+ansible-inventory --list
+ansible-inventory --graph
+ansible all -m setup
+ansible staging_servers -m setup
+#--------------------------------------------------
+#Ad-HOC
+
+ansible all -m shell -a "uptime"
+ansible all -m shell -a "ls /etc"
+ansible all -m shell -a "ls /var"
+ansible all -m shell -a "ls /etc | grep python"
+#--------------------------------------------------
+echo Privet > privet.txt
+ansible all -m copy -a "src=/root/ansible/privet.txt dest=/home/user1 mode=0644" -bK
+
+#Удалить
+ansible all -m file -a "path=/home/user1/privet.txt state=absent"
+
+ansible prod_servers -m copy -a "src=/root/ansible/privet.txt dest=/home/user1 mode=0644"
+ansible all -m file -a "path=/home/user1/privet.txt state=absent"
+#--------------------------------------------------
+ansible all -m get_url -a "url=https://github.com/ksemaev/manuals/archive/refs/heads/master.zip dest=/home/user1"
+ansible all -m shell -a "ls -l /home/user1"
+ansible all -m file -a "path=/home/user1/manuals-master.zip state=absent"
+#--------------------------------------------------
+ansible all -m apt -a "name=stress state=present" -bK
+ansible all -m apt -a "name=stress state=absent" -bK
+#--------------------------------------------------
+ansible all -m uri -a "url=https://adv-it.net"
+ansible all -m uri -a "url=https://adv-it.net return_content=yes"
+#--------------------------------------------------
+ansible all -m apt -a "name=apache2 state=present" -bK
+ansible all -m systemd -a "name=apache2 state=started enabled=yes" -bK
+ansible all -m systemd -a "name=apache2 state=stopped enabled=no" -bK
+curl 192.168.122.127
+ansible all -m apt -a "name=apache2 state=absent" -bK
+#--------------------------------------------------
+ansible all -m shell -a "ls /var" -vvvvv
+ansible-doc -l
+ansible-doc -l | grep win_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,110 @@
+ansible.cfg
+
+inventory = /root/ansible/inventory.ini
+host_key_checking = false
+#-------------------------------------------------
+inventory.ini
+
+[prod_servers]
+test    ansible_host=192.168.122.127    
+test2   ansible_host=192.168.122.80     
+
+[staging_server]
+test3   ansible_host=192.168.122.97     ansible_user=user1      ansible_ssh_private_key_file=/root/.ssh/id_rsa
+
+[prod_servers:vars]
+ansible_user=user1
+ansible_ssh_private_key_file=/root/.ssh/id_rsa
+
+[all_servers:children]
+prod_servers
+staging_server
+
+[all_servers:vars]
+db_entpoint=xxxxxx.yyyyyyyy.com:4151
+owner=vasya
+location="Houston,TX"
+
+ansible-inventory --list
+#-------------------------------------------------
+#group_vars
+
+mkdir group_vars
+
+cd group_vars
+nano prod_servers
+
+ansible_user                    : user1
+ansible_ssh_private_key_file    : /root/.ssh/id_rsa
+
+
+nano staging_server
+
+ansible_user                    : user1
+ansible_ssh_private_key_file    : /root/.ssh/id_rsa
+
+
+nano all_servers
+
+db_entpoint             : xxxxxx.yyyyyyyy.com:4151
+owner                   : vasya
+location                : "Houston,TX"
+
+
+nano inventory.ini
+
+[prod_servers]
+test    ansible_host=192.168.122.127    
+test2   ansible_host=192.168.122.80     
+
+[staging_server]
+test3   ansible_host=192.168.122.97     
+
+[all_servers:children]
+prod_servers
+staging_server
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

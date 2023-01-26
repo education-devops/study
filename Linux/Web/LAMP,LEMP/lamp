@@ -1,0 +1,61 @@
+sudo apt-get update; sudo apt-get install libapache2-mod-php php-mysql default-mysql-server -y
+#-------------------------------------------------------------------------------------------------
+nano /etc/apache2/sites-available/php-test.conf
+
+<VirtualHost *:80>
+        ServerAdmin root@php-test.com
+        ServerName php-test.com
+        ServerAlias www.php-test.com
+        DocumentRoot /var/www/php-test/
+        ErrorLog /var/log/apache2/php-test/error.log
+        CustomLog /var/log/apache2/php-test/access.log combined
+</VirtualHost>
+#-------------------------------------------------------------------------------------------------
+mkdir /var/www/php-test/
+mkdir /var/log/apache2/php-test/
+#-------------------------------------------------------------------------------------------------
+nano /var/www/php-test/index.php
+
+<?php phpinfo(); ?>
+#-------------------------------------------------------------------------------------------------
+nano /var/www/php-test/test-connection.php
+
+<?php
+$servername = 'localhost';
+$username   = 'web_user';
+$password   = 'password';
+
+// Create connection
+$conn = new mysqli($servername, $username, $password);
+
+// Check connection
+if ($conn->connect_error) {
+    die("(Connection failed: " . $conn->connect_error);
+}
+
+$sql        = "SELECT VERSION()";
+$result     = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    // Output data of each row
+    while($row = $result->fetch_assoc()) {
+        print_r($row);
+    }
+} else {
+    echo "0 results";
+}
+$conn->close();
+?>
+#-------------------------------------------------------------------------------------------------
+
+a2ensite php-test.conf
+#-------------------------------------------------------------------------------------------------
+mysql_secure_installation
+
+CREATE DATABASE web_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE web_db;
+CREATE USER 'web_user'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON web_db.* to 'web_user'@'localhost';
+exit;
+#-------------------------------------------------------------------------------------------------
+

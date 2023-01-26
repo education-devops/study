@@ -1,0 +1,9 @@
+SELECT * FROM employee
+LEFT JOIN bicycle
+ON bicycle.id = employee.bicycle_id
+WHERE bicycle_id IS NOT NULL;
+
+
+#Папка должна быть с разрешением на запись
+\copy (SELECT * FROM employee LEFT JOIN bicycle ON bicycle.id = employee.bicycle_id WHERE bicycle_id IS NOT NULL) TO '/sql/test.csv' DELIMITER ',' CSV HEADER;
+\copy (SELECT * FROM employee LEFT JOIN bicycle ON bicycle.id = employee.bicycle_id WHERE bicycle_id IS NOT NULL) TO '/sql/test.csv' DELIMITER ',' CSV;

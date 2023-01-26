@@ -1,0 +1,33 @@
+sudo apt-get install nginx
+
+mkdir mysite; cd mysite
+pwd /home/user1/mysite
+
+------------------------------------------
+nano index.html
+
+<html>
+	<body>
+		<h1>Hello NGINX!!!</h1>
+	</body>
+</html>
+------------------------------------------
+cd /etc/nginx/
+cp nginx.conf{,.back}
+------------------------------------------
+nano nginx.conf
+
+http {
+    server {
+        listen 8080;
+        root    /home/user1/mysite/;
+    }
+}
+
+events {}
+------------------------------------------
+
+nginx -t 
+nginx -s reload
+
+http://10.10.10.136:8080/

@@ -1,0 +1,99 @@
+#Пользователь
+adduser --system --group user1
+
+useradd -mG users -s /bin/bash user1
+userdel -r user1
+
+usermod -s /bin/bash user1
+#-------------------------------------------
+#Блокировка, разблокировка
+usermod -L user1
+usermod -U user1
+
+#Срок действия пароля
+chage -l user2
+chage -E 2023-01-09 user2
+
+#сбросить
+chage -E -1 user2
+#-------------------------------------------
+#Собирает общую информацию
+getent passwd
+getent shadow
+#--------------------------------------------
+#Группы
+
+groupadd test
+groupdel test
+
+usermod -aG test user2
+adduser user2 test
+
+gpasswd -d user2 test
+deluser user2 test
+
+usermod -g 25000 test
+#--------------------------------------------
+#Группа для файлов и каталогов(то же самое, можно через chown)
+
+sudo chgrp www-data file.txt
+sudo chgrp www-data folder
+
+sudo chown root:www-data file.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

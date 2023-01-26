@@ -1,0 +1,32 @@
+version: "3"
+services:
+  gotify:
+    image: gotify/server
+    ports:
+      - 8082:80
+    environment:
+      - TZ=Europe/Moscow
+      - GOTIFY_DEFAULTUSER_PASS=MyDefaultPass123
+    volumes:
+      - "./gotify_data:/app/data"
+---------------------------------------------------------------
+admin
+MyDefaultPass123
+
+
+apps > create application > name: testApp			> create (копируем токен)
+			    environment: test Application
+
+# Тестовое сообщение
+curl "http://10.10.10.136:8082/message?token=<apptoken>" -F "title=my title" -F "message=my message" -F "priority=5"
+------------------------------------------------------------------------------------------------------------------------------
+apps > create application > name: watchtower			> create (копируем токен)
+			    environment: watchtower Application
+
+docker run --name watchtower -v /var/run/docker.sock:/var/run/docker.sock \
+-e WATCHTOWER_NOTIFICATIONS=gotify \
+-e WATCHTOWER_NOTIFICATION_GOTIFY_URL="http://10.10.10.136:8082" \
+-e WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN="<token>" \
+containrrr/watchtower \
+--run-once --monitor-only
+------------------------------------------------------------------------------------------------------------------------------

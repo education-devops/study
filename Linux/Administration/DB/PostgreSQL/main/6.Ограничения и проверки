@@ -1,0 +1,15 @@
+SELECT email, count(*) FROM employee GROUP BY email order by email;
+SELECT email, count(*) FROM employee GROUP BY email HAVING COUNT(*) > 1 ORDER BY email;
+
+#Добавляем повторяющуюся строку без id, для проверки дубликатов
+INSERT INTO employee (first_name, last_name, gender, email, date_of_birth, country_of_birth) VALUES ('Monet', 'Sharpe', 'male', 'vincenzaschaeffer@gmail.com',  '1965-04-29', 'Sri Lanka');
+SELECT email, count(*) FROM employee GROUP BY email HAVING COUNT(*) > 1 ORDER BY email;
+
+SELECT * FROM employee WHERE email = 'vincenzaschaeffer@gmail.com';
+DELETE FROM employee WHERE id = 100;
+
+ALTER TABLE employee ADD CONSTRAINT unique_email_address UNIQUE (email);
+\d employee
+
+ALTER TABLE employee ADD CONSTRAINT gender_constraint CHECK(gender='female' OR gender='male');
+

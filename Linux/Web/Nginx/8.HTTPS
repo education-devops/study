@@ -1,0 +1,55 @@
+# https://nginx.org/ru/docs/http/configuring_https_servers.html
+
+sudo nano /etc/nginx/sites-available/default
+
+server {
+    listen                  443 ssl http2;
+    root                    /var/www/html;
+
+    index                   index.html index.nginx-debian.html;
+
+    server_name             _;
+
+    ssl_certificate         /etc/nginx/ssl/cert.crt;
+    ssl_certificate_key     /etc/nginx/ssl/cert.key;
+    ssl_trusted_certificate /etc/nginx/ssl/ca.crt;
+
+    ssl_protocols           TLSv1.2 TLSv1.3;
+    ssl_ciphers             "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-
+                            CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384";
+
+    location                /                       {
+                            try_files $uri $uri/ =404;
+    }
+}
+--------------------------------------------------------------------------------------------------------------------
+mkdir test; cd test
+
+openssl genrsa -out ca.key 4096
+openssl req -new -x509 -sha256 -days 3650 -key ca.key -out ca.crt -subj "/CN=example.com/O=A_test/ST=Some-State/C=AU"
+#openssl x509 -noout -text -in ca.crt
+
+openssl genrsa -out cert.key 4096
+openssl req -new -sha256 -subj "/CN=example.com/O=A_test/ST=Some-State/C=AU" -key cert.key -out cert.csr
+
+echo "subjectAltName=DNS:*.example.com" >> extfile.cnf
+
+openssl x509 -req -sha256 -days 3650 -in cert.csr -CA ca.crt -CAkey ca.key -out cert.crt -extfile extfile.cnf -CAcreateserial
+#openssl x509 -noout -text -in cert.crt
+--------------------------------------------------------------------------------------------------------------------
+sudo mkdir /etc/nginx/ssl
+
+sudo cp ca.crt /usr/local/share/ca-certificates/
+sudo update-ca-certificates
+
+sudo cp ca.crt /etc/nginx/ssl/ca.crt
+sudo cp cert.crt /etc/nginx/ssl/cert.crt
+sudo cp cert.key /etc/nginx/ssl/cert.key
+
+# Скачать ca.crt, добавить в браузер
+
+sudo nano /etc/hosts
+
+10.10.10.136	test.example.com
+
+https://test.example.com

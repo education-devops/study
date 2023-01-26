@@ -1,0 +1,19 @@
+sudo apt-get install apache2-utils -y
+
+htpasswd -c /etc/nginx/.htpasswd root
+
+cat /etc/nginx/.htpasswd
+
+nano /etc/nginx/sites-enabled/downloads
+
+location ~ \.mp4$ {
+        root /var/www/html/;
+        mp4;
+        mp4_buffer_size 4m;
+        mp4_max_buffer_size 10m;
+
+
+        auth_basic "Restricted Content";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+}
+

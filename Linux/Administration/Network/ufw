@@ -1,0 +1,33 @@
+sudo apt-get install ufw
+iptables -S 
+
+ufw status
+ufw status numbered
+ufw enable
+ufw disable
+ufw reload
+ufw reset
+
+ufw allow 22/tcp
+
+ufw allow 1000:1010/tcp
+
+ufw deny 12345/tcp
+
+ufw allow from 123.123.123.123
+
+ufw allow from 123.123.123.123 to any port 443
+
+ufw allow from 192.168.1.0/24
+
+ufw allow from 192.168.1.0/24 to any port 443
+
+ufw delete 7
+
+ufw delete allow 1000:1010/tcp
+
+ufw allow ssh
+ufw delete allow ssh
+
+ufw default allow input
+ufw default deny input

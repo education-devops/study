@@ -1,0 +1,13 @@
+git log --pretty=oneline
+
+git tag v1.0.0
+git push origin v1.0.0
+
+git tag -d v1.0.0
+git tag push origin -d v1.0.0
+
+git tag -a v1.5.0 <hash>
+git push origin --tags
+
+git checkout v1.0.0
+git checkout main

@@ -1,0 +1,43 @@
+CREATE DATABASE testdb;
+\l
+\c testdb
+\conninfo
+
+testdb=# CREATE TABLE employee (
+testdb(# id BIGSERIAL NOT NULL PRIMARY KEY,
+testdb(# first_name VARCHAR(50) NOT NULL,
+testdb(# last_name VARCHAR(50) NOT NULL,
+testdb(# gender VARCHAR(6) NOT NULL,
+testdb(# email VARCHAR(150),
+testdb(# date_of_birth DATE NOT NULL
+testdb(# );
+
+\d
+\d employee
+
+testdb=# INSERT INTO employee (
+testdb(# first_name, last_name, gender, email, date_of_birth)
+testdb-# VALUES('John', 'Doe', 'MALE', 'Jd@mail.com', '2000-01-01');
+#---------------------------------------------------------------------------------------------
+nano 1.sql
+
+CREATE TABLE employee (
+  id BIGSERIAL NOT NULL PRIMARY KEY,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  gender VARCHAR(6) NOT NULL,
+  email VARCHAR(150),
+  date_of_birth DATE NOT NULL,
+  country_of_birth VARCHAR(50) NOT NULL
+);
+
+#https://www.coderstool.com/sql-test-data-generator
+
+INSERT INTO employee (first_name, last_name, gender, email, date_of_birth, country_of_birth) VALUES ('{{firstname}}', '{{surname}}', {{integer 10000 10002}}, '{{email}}',  '{{date 1950-01-01 2000-01-01}}', '{{country}}');
+
+sed -i 's/10000/'\''male'\''/g'
+sed -i 's/10001/'\''female'\''/g'
+#---------------------------------------------------------------------------------------------
+\i /sql/1.sql
+
+SELECT * FROM employee;

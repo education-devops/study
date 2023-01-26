@@ -1,0 +1,97 @@
+#--------------------------------------------------------------------------------
+nano MyWebSite2/index.j2
+
+<HTML>
+HELLO!!!
+<BODY>
+<CENTER>
+<font color"gold"> Owner of this Server is: {{ owner }}<br>
+Server Host Name: {{ ansible_hostname }}<br>
+Server OS is: {{ ansible_os_family }}<br>
+IP Address of this Server is: {{ ansible_default_ipv4.address }}<br>
+</BODY>
+</HTML>
+#--------------------------------------------------------------------------------
+
+---
+
+- name: Install Apache and Upload Web Page
+  hosts: all
+  become: yes
+
+  vars:
+    source_file: /root/ansible/MyWebSite2/
+    dest_file: /var/www/html
+
+  tasks:
+
+  - debug:
+      msg: "Linux version: {{ ansible_os_family }}; IP address: {{ ansible_eth0.ipv4.address }}"
+
+  - block: # ========RedHat========
+    
+      - name: Install Apache WebServer for RedHat
+        yum:
+          name: httpd
+          state: present
+
+      - name: Start Apache and Enable RedHat
+        systemd:
+          name: httpd
+          state: started
+          enabled: yes
+      
+    when: ansible_os_family=="RedHat"
+
+  - block: # ========Debian========
+
+      - name: Install Apache WebServer for Debian
+        apt:
+          name: apache2
+          state: present
+  
+      - name: Start Apache and Enable Debian
+        systemd:
+          name: apache2
+          state: started
+          enabled: yes
+    
+    when: ansible_os_family=="Debian"
+
+  - name: Generate INDEX.HTML file
+    template:
+      src: "{{ source_file }}/index.j2"
+      dest: "{{ dest_file }}/index.html"
+      mode: 0644
+    notify:
+      - Restart Apache Debian
+      - Restart Apache RedHat
+
+  - name: Copy MyHomePage to Servers Debian
+    copy:
+      src: "{{ source_file }}/{{ item }}"
+      dest: "{{ dest_file }}"
+      mode: 0644
+    loop:
+      - "bahamas.png"
+      - "jordan.png"
+      - "newzeland.png"
+      - "Flag.png"
+            
+    notify: 
+      - Restart Apache Debian
+      - Restart Apache RedHat
+
+  handlers:
+  - name: Restart Apache Debian
+    systemd:
+      name: apache2
+      state: restarted
+    when: ansible_os_family=="Debian"
+
+  - name: Restart Apache RedHat
+    systemd:
+      name: httpd
+      state: restarted
+    when: ansible_os_family=="RedHat"
+

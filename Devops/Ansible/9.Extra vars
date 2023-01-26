@@ -1,0 +1,76 @@
+
+nano inventory.ini
+
+---
+
+- name: Install Apache and Upload Web Page
+  hosts: "{{ myhosts }}"
+  become: yes
+
+  roles:
+    - { role: deploy_apache_web, when: ansible_system == 'Linux' }
+#---------------------------------------------------------------------------------------
+ansible-playbook playbook.yml --extra-vars "myhosts=staging_server"
+ansible-playbook playbook.yml --extra-vars "myhosts=prod_servers owner=asd"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,85 @@
+pvdisplay
+vgdisplay
+lvdisplay
+
+pvcreate /dev/vdb1
+pvcreate /dev/vdb2
+
+vgcreate vg_lvm /dev/vdb1 /dev/vdb2
+
+lvcreate -n lv1 -L 2G vg_lvm
+lvcreate -n lv2 -L 3G vg_lvm
+
+fdisk -l
+
+mkfs.ext4 /dev/mapper/vg_lvm-lv1
+mkfs.ext4 /dev/mapper/vg_lvm-lv2
+
+lvresize -L 4G /dev/mapper/vg_lvm/lv2
+#---------------------------------------------------------
+lvdisplay
+lvremove /dev/vg_lvm/lv1
+lvremove /dev/vg_lvm/lv2
+lvdisplay
+#------------------------
+vgdisplay
+vgremove vg_lvm
+vgdisplay
+#------------------------
+pvdisplay
+pvremove /dev/vdb1
+pvremove /dev/vdb2
+pvdisplay
+#------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

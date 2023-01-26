@@ -1,0 +1,51 @@
+docker network create -d bridge --subnet 192.168.10.0/24 --gateway 192.168.10.1 myNet192
+
+docker run --rm -it --name container1 --net myNet01 alpine bash
+docker run -d -it --rm --name container1 --net myMACvlan alpine
+
+docker network connect myNet01 container2
+docker network disconnect myNet01 container2
+
+docker network create -d macvlan --subnet 192.168.100.0/24 --gateway 192.168.100.1 --ip-range 192.168.100.99/32 -o parent=eth0 myMACvlan
+docker network create -d macvlan --subnet 192.168.122.0/24 --gateway 192.168.122.1 --ip-range 192.168.122.116/32 -o parent=eth0 myHomevlan  (хостовая сеть)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

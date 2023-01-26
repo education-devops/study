@@ -1,0 +1,12 @@
+proxy_cache_valid 1h;
+proxy_cache_key $scheme$proxy_host$request_uri$cookie_US;
+proxy_cache_path    /usr/local/nginx/cache  levels=1:2 inactive=2h keys_zone=one:10m max_size=100m;
+fastcgi_cache_path  /usr/local/nginx/cache2 levels=1:2 inactive=2h keys_zone=two:10m max_size=100m;
+
+location / {
+	proxy_cache one;
+        proxy_cache_valid 200 10m;
+        proxy_cache_use_stale updating error timeout invalid_header http_500 http_502 http_504;
+        proxy_cache_background_update on;
+        proxy_cache_key $scheme$proxy_host$request_uri$cookie_test;
+}

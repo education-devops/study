@@ -1,0 +1,160 @@
+cd /Data
+rm date.txt text.txt uptime.txt
+rmdir Folder
+
+mkdir Shared
+stat Shared
+
+sudo apt-get install samba
+sudo cp /etc/samba/smb.conf{,.back}
+
+-----------------------------------------------
+#добавить внизу
+sudo nano /etc/samba/smb.conf
+
+[Shared Folder number one]
+	comment = Some shared folder
+	path = /Data/Shared
+	inherit acls = yes
+	writable = yes
+
+	valid users = user1
+	read list = user1
+	write list = user1
+-----------------------------------------------
+sudo testparm (Enter)
+sudo smbpasswd -a user1
+sudo systemctl restart smbd
+-----------------------------------------------
+#windows 10 через папку
+\\10.0.10.163
+Создать папку "Создал в Windows 10
+Создать файл "Readme.txt"
+
+#linux(mate)
+smb://10.0.10.163
+Создать папку "Created on Linux"
+-----------------------------------------------
+ls /Data/Shared
+----------------------------------------------------------------------------------------------
+sudo groupadd Buhs
+sudo adduser buh1
+sudo adduser buh1 Buhs
+
+rm -rf /Data/Shared
+mkdir /Data/Shared1
+stat Shared1
+
+mkdir /Data/Shared2
+sudo chown buh1:user1 Shared2
+sudo chmod 770 Shared2
+stat Shared2
+
+mkdir /Data/Shared3
+sudo chown buh1:user1 Shared3
+sudo chmod 770 Shared3
+stat Shared3
+
+mkdir Shared4
+stat Shared4
+sudo chmod 777 Shared4
+-----------------------------------------------
+sudo nano /etc/samba/smb.conf
+#удаляем
+[Shared Folder number one]
+# создаём
+[Shared1]
+	path = /Data/Shared1
+	writable = yes
+	write list = user1
+[Shared2]
+	path = /Data/Shared2
+	writable = yes
+	inherit owner = yes
+	inherit permissions = yes
+	write list = user1
+[Shared3]
+	path = /Data/Shared3
+	writable = yes
+	force user = buh1
+	force group = Buhs
+	create mask = 0777
+	write list = user1
+[Shared4]
+	path = /Data/Shared4
+	writable = yes
+	guest ok = yes
+
+-----------------------------------------------
+sudo testparm
+sudo systectl restart smbd
+-----------------------------------------------
+#windows 10 через папку
+\\10.0.10.163
+#Создаем папку в Shared1(название 1)
+#Создаем папку в Shared2(название 2)
+#Создаем папку в Shared3(название 3)
+#Создаем обычный файл в Shared4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

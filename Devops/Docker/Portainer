@@ -1,0 +1,118 @@
+nano docker-compose.yml
+
+#docker run -d --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v /opt/portainer/portainer_data:/data -p 8000:8000 -p 9443:9443 portainer/portainer-ce:latest
+
+version: "3.3"
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/portainer/portainer_data:/data
+    ports:
+      - "8000:8000"
+      - "9443:9443"
+    restart: always
+--------------------------------------------------------------------------------------------------------------------------------------------------
+docker-compose up -d
+https://10.10.10.241:9443/
+создать пароль
+
+home > local > app templates > nginx > name: mynginx > Show advanced options > Port mapping:			> deploy the container
+										host: 81 > container: 80
+										host: 4431 > container: 443
+
+
+
+
+home > local > containers > Add container > name: myapache2 > image: ubuntu/apache2 > Manual network port publishing:  > deploy the container
+										host: 82 > container: 80
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+home > local > stacks > add stack > name: nextcloud > web editor:   		> deploy the stack
+
+version: '2'
+
+volumes:
+  nextcloud:
+  db:
+
+services:
+  db:
+    image: mariadb:10.5
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=nextcloud
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  app:
+    image: nextcloud
+    restart: always
+    ports:
+      - 8080:80
+    links:
+      - db
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+home > local > stacks > add stack > name: ghost > web editor:   		> deploy the stack
+
+version: '3.1'
+
+services:
+
+  ghost:
+    image: ghost:4-alpine
+    restart: always
+    ports:
+      - 2368:2368
+    environment:
+      # see https://ghost.org/docs/config/#configuration-options
+      database__client: mysql
+      database__connection__host: db
+      database__connection__user: root
+      database__connection__password: example
+      database__connection__database: ghost
+      # this url value is just an example, and is likely wrong for your environment!
+      url: http://10.10.10.241:2368
+      # contrary to the default mentioned in the linked documentation, this image defaults to NODE_ENV=production (so development mode needs to be explicitly specified if desired)
+      #NODE_ENV: development
+
+  db:
+    image: mysql:8.0
+    restart: always
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Environments > add environments > docker standalone > Start wizard > Name: docker-server02 > Environment address: 10.10.10.136:9001 > на другом хосте:		> connect  
+
+docker run -d \
+  -p 9001:9001 \
+  --name portainer_agent \
+  --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /var/lib/docker/volumes:/var/lib/docker/volumes \
+  portainer/agent:2.16.2
+
+
+
+
+
+
+
+
+
+
+
+
+

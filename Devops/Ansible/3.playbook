@@ -1,0 +1,130 @@
+nano playbook1.yml
+
+---
+
+- name: Test Connection to my servers
+  hosts: all
+  become: yes
+
+  tasks: 
+    
+  - name: Ping my servers
+    ping:
+
+ansible-playbook playbook1.yml
+#-------------------------------------------------------------------------
+nano playbook2.yml
+
+- name: Install default Apache Web Server
+  hosts: all
+  become: yes
+
+  tasks:
+
+  - name: Install Apache WebServer
+    apt:
+      name: apache2
+      state: latest
+
+  - name: Start Apache and Enable it in the every boot
+    systemd:
+      name: apache2
+      state: started
+      enabled: yes
+#-------------------------------------------------------------------------
+nano playbook3.yml
+
+- name: Install Apache and Upload Web Page
+  hosts: all
+  become: yes
+
+  vars:
+    source_file: /root/ansible/MyWebSite/index.html
+    dest_file: /var/www/html
+
+  tasks:
+
+  - name: Install Apache WebServer
+    apt:
+      name: apache2
+      state: latest
+
+  - name: Copy MyHomePage to Servers
+    copy:
+      src: "{{ source_file }}"
+      dest: "{{ dest_file }}"
+      mode: 0644
+    notify: Restart Apache
+
+  - name: Start Apache and Enable it in the every boot
+    systemd:
+      name: apache2
+      state: started
+      enabled: yes
+
+  handlers:
+  - name: Restart Apache
+    systemd:
+      name: apache2
+      state: restarted
+
+
+
+mkdir MyWebSite
+nano MyWebSite/index.html
+
+<HEAD>
+  HELLO!!!
+</HEAD>
+
+#Попробовать поменять текст в html и перезапустить.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

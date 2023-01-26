@@ -1,0 +1,52 @@
+#https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+
+stages:
+  - test
+
+variables:
+  test_file: /tmp/test_job.txt
+
+test_job_ci:
+  stage: test
+  tags:
+    - test
+  script:
+    - touch $test_file
+    - echo "CI_PROJECT_URL - "$CI_PROJECT_URL
+    - echo "CI_PROJECT_VISIBILITY - "$CI_PROJECT_VISIBILITY
+    - echo "CI_PROJECT_DIR - "$CI_PROJECT_DIR >> $test_file
+    - echo "CI_PROJECT_NAME - "$CI_PROJECT_NAME >> $test_file
+    - echo "CI_PROJECT_PATH - "$CI_PROJECT_PATH >> $test_file
+    - echo "CI_PROJECT_NAMESPACE - "$CI_PROJECT_NAMESPACE >> $test_file
+    - echo "CI_REGISTRY - "$CI_REGISTRY >> $test_file
+    - echo "CI_REGISTRY_USER - "$CI_REGISTRY_USER >> $test_file
+    - echo "CI_REGISTRY_PASSWORD - "$CI_REGISTRY_PASSWORD >> $test_file
+    - echo "CI_REGISTRY_IMAGE - "$CI_REGISTRY_IMAGE >> $test_file
+    - echo "CI_JOB_TOKEN - "$CI_JOB_TOKEN >> $test_file
+    - echo "CI_COMMIT_BRANCH - "$CI_COMMIT_BRANCH >> $test_file
+    - echo "CI_COMMIT_DEFAULT_BRANCH - "$CI_COMMIT_DEFAULT_BRANCH >> $test_file
+    - echo "CI_COMMIT_REF_SLUG - "$CI_COMMIT_REF_SLUG >> $test_file
+    - echo "CI_PIPELINE_ID - "$CI_PIPELINE_ID >> $test_file
+    - echo "CI_REPOSITORY_URL - "$CI_REPOSITORY_URL >> $test_file
+    - echo "CI_SERVER_TLS_CA_FILE" - "$CI_SERVER_TLS_CA_FILE" >> $test_file
+
+
+CI_PROJECT_DIR - /home/gitlab-runner/builds/K9nQTs15/0/user1/test
+CI_PROJECT_NAME - test
+CI_PROJECT_PATH - user1/test
+CI_PROJECT_NAMESPACE - user1
+CI_REGISTRY - gitlab.example.com:5050
+CI_REGISTRY_USER - gitlab-ci-token
+CI_REGISTRY_PASSWORD - UGMThhaRFjWJBqaT-yFg
+CI_REGISTRY_IMAGE - gitlab.example.com:5050/user1/test
+CI_JOB_TOKEN - UGMThhaRFjWJBqaT-yFg
+CI_COMMIT_BRANCH - main
+CI_COMMIT_DEFAULT_BRANCH - 
+CI_COMMIT_REF_SLUG - main
+CI_COMMIT_REF_NAME - main
+CI_PIPELINE_ID - 147
+CI_REPOSITORY_URL - https://gitlab-ci-token:UGMThhaRFjWJBqaT-yFg@gitlab.example.com/user1/test.git
+CI_SERVER_TLS_CA_FILE - /home/gitlab-runner/builds/K9nQTs15/0/user1/test.tmp/CI_SERVER_TLS_CA_FILE
+CI_PROJECT_URL - https://gitlab.example.com/user1/test
+CI_MERGE_REQUEST_PROJECT_URL - 
+CI_TEMPLATE_REGISTRY_HOST - registry.gitlab.com

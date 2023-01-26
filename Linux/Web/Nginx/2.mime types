@@ -1,0 +1,68 @@
+nano /home/user1/mysite/index.html
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <title> MY NGINX project </title>
+        <link rel="stylesheet" href="./styles.css" />
+    </head>
+    <body>
+        <h1>Hello NGINX!!!</h1>
+    </body>
+</html>
+----------------------------------------------------------------
+
+nano /home/user1/mysite/styles.css
+
+h1 {
+    background-color: pink;
+    color: aqua;
+}
+----------------------------------------------------------------
+nano /etc/nginx/nginx.conf
+
+http {
+
+    types {
+        text/css    css;
+        text/html   html;
+    }
+
+    server {
+        listen 8080;
+        root    /home/user1/mysite/;
+    }
+}
+
+events {}
+----------------------------------------------------------------
+
+sudo nginx -t
+sudo nginx -s reload
+
+http://10.10.10.136:8080
+
+----------------------------------------------------------------
+nano /etc/nginx/nginx.conf
+
+http {
+
+    include mime.types;
+
+    server {
+        listen 8080;
+        root    /home/user1/mysite/;
+    }
+}
+
+events {}
+----------------------------------------------------------------
+
+
+
+
+
+
+

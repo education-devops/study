@@ -1,0 +1,44 @@
+CREATE TABLE holiday (
+id BIGSERIAL NOT NULL PRIMARY KEY,
+destination_country VARCHAR(100) NOT NULL,
+destination_city VARCHAR(100) NOT NULL,
+price NUMERIC(19, 2) NOT NULL
+);
+
+#https://www.coderstool.com/sql-test-data-generator
+INSERT INTO holiday (destination_country, destination_city, price) VALUES ('{{country}}', '{{city}}', '{{normal 1000 2000 2}}');
+
+sed -i 's/'-'/''/g'
+
+\d holiday
+SELECT * FROM holiday;
+
+SELECT 100 + 2;
+SELECT 100 * 2;
+SELECT 100 / 2;
+SELECT 100 - 2;
+SELECT 100 ^ 2;
+SELECT 100 % 2;
+SELECT 5!;
+
+SELECT MIN(price) FROM holiday;
+SELECT MAX(price) FROM holiday;
+
+#Средняя цена
+SELECT AVG(price) FROM holiday;
+
+#Округление
+SELECT ROUND(AVG(price)) FROM holiday;
+
+SELECT destination_country, destination_city, MAX(price) FROM holiday GROUP BY destination_country, destination_city;
+SELECT destination_country, destination_city, MIN(price) FROM holiday GROUP BY destination_country, destination_city;
+
+SELECT destination_country, MIN(price) FROM holiday GROUP BY destination_country;
+SELECT destination_country, MAX(price) FROM holiday GROUP BY destination_country;
+
+#Суммировать всю сумму в price
+SELECT SUM(price) FROM holiday;
+
+SELECT destination_country, SUM(price) FROM holiday GROUP BY destination_country ORDER BY sum(price) ASC;
+
+SELECT id, destination_country, destination_city, ROUND(price) FROM holiday;

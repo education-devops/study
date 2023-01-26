@@ -1,0 +1,19 @@
+#Полный список доступных раширений
+SELECT * FROM pg_available_extensions ORDER BY pg_available_extensions;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+\df
+
+SELECT uuid_generate_v4();
+
+CREATE TABLE passport (
+passport_serial UUID NOT NULL PRIMARY KEY,
+issue_date DATE NOT NULL,
+expire_date DATE NOT NULL,
+country_of_issue VARCHAR(150) NOT NULL
+);
+
+INSERT INTO passport (passport_serial, issue_date, expire_date, country_of_issue)
+VALUES (uuid_generate_v4(), '2020_03_19', '2045_03_19', 'United_Kingdom');
+
+SELECT * FROM passport;

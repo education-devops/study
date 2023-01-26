@@ -1,0 +1,120 @@
+
+nano playbook.yml
+
+---
+
+- name: My Super Playbook
+  hosts: all
+  become: yes
+
+  vars:
+    mytext: "Privet of ADV-IT"
+
+  tasks:
+  - name: Ping Test
+    ping:
+
+  - include: create_folders.yml
+    tags: folders
+
+  - include: create_files.yml mytext="Hello from Vancouver BC"
+    tags: files
+#-----------------------------------------------------------------------------
+
+nano create_folder.yml
+
+- name: Create folder1
+  file:
+    path: /root/secret/folder1
+    state: directory
+    mode: 0755
+
+- name: Create folder2
+  file:
+    path: /root/secret/folder2
+    state: directory
+    mode: 0755
+#-----------------------------------------------------------------------------
+
+nano create_files.yml
+
+- name: Create file1
+  copy:
+    dest: /root/secret/file1.txt
+    content:  |
+      Text Line1, in file1
+      Text Line2, in file1
+      Text Line3, {{ mytext }}
+
+- name: Create file2
+  copy:
+    dest: /root/secret/file2.txt
+    content: |
+      Text Line1, in file2
+      Text Line2, in file2
+      Text Line3, {{ mytext }}
+#-----------------------------------------------------------------------------
+
+ansible-playbook playbook.yml --tags=files
+ansible-playbook playbook.yml --skip-tags=files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

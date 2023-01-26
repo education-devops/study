@@ -1,0 +1,31 @@
+git flow init 
+
+git flow feature start feature_branch
+touch feature.html
+git add .
+git commit -m "feature complete!"
+git log
+git reflog
+git flow feature finish feature_branch
+
+git flow release start 0.1.0
+git branch
+git tag
+touch release-fix.html
+git add .
+git commit -m "release fixed!"
+git log
+git branch
+git flow release finish 0.1.0
+git log
+git reflog
+git tag
+
+git flow hotfix start 0.1.1
+touch fix.html
+git add .
+git commit -m "Fixed!"
+git flow hotfix finish 0.1.1
+git tag 
+git branch
+ls

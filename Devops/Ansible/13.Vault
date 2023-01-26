@@ -1,0 +1,160 @@
+ansible-vault create mysecretfile.txt
+ansible-vault view mysecretfile.txt
+ansible-vault edit mysecretfile.txt
+
+ansible-vault rekey mysecretfile.txt
+
+ansible-vault encrypt myfile.yml
+ansible-vault decrypt myfile.yml
+
+ansible-vault myfile.yml --ask-vault-pass
+ansible-vault myfile.yml --vault-password-file mypass.txt
+
+ansible-vault encrypt string
+echo -n "secretword" | ansible-vault encrypt_string
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nano mysecret.txt
+asdas
+asd
+das
+asd
+#------------------------------------------------------------------
+ansible-vault create mysecret.txt
+ansible-vault view mysecret.txt
+ansible-vault edit mysecret.txt
+ansible-vault rekey mysecret.txt
+#------------------------------------------------------------------
+nano ansible_vault.yml
+
+---
+
+- name: Ansible Vault
+  hosts: all
+  become: yes
+
+  vars:
+    admin_password: $6$Unws,mO9!$EQ9SC0pHDw1GKLG1i7V2hpl4R.G2yGRbDpElskZp/PkmM.yHFUmbpOZ9WxTxw4v2u/9TN44rV6Gt1nJcA/9Ew/
+
+  tasks:
+  - name: Install package Tree
+    apt:
+      name: tree
+      state: present
+
+  - name: Create config file
+    copy:
+      dest: "/home/user1/myconfig.conf"
+      content: |
+        port=9092
+        log= 7days
+        home=/opt/kafka/bin/
+        user=admin
+        password={{ admin_password }}
+#------------------------------------------------------------------
+ansible-vault encrypt playbook_vault.yml
+cat playbook_vault.yml
+ansible-vault view playbook_vault.yml
+ansible-vault decrypt playbook_vault.yml
+#------------------------------------------------------------------
+ansible-vault encrypt playbook_vault.yml
+cat playbook_vault.yml
+ansible-playbook playbook_vault.yml
+ansible-playbook playbook_vault.yml --ask-vault-pass
+#------------------------------------------------------------------
+rm mysecret.txt
+nano mypass.txt
+
+111
+#------------------------------------------------------------------
+cat playbook_vault.yml
+ansible-playbook playbook_vault.yml --vault-password-file mypass.txt
+ansible-vault decrypt playbook_vault.yml
+#------------------------------------------------------------------
+ansible-vault encrypt_string
+ansible-vault encrypt_string --stdin-name "Mypassword"
+
+!vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63353762636638336264306635633565343563353563353637646161393038393164353764623462
+          3938613165393332376463363235393335346436303963360a393862643731653438356534613934
+          39666538303033643334613332303938616332666265643635366565306637363238626438376363
+          3661663161613932630a336531363763323865386233666232613234636338653038363639366432
+          36626137623730656235666239323633363166383062343565633534383039666665323063646534
+          34666635363633343761393261353062326232346466323361356631336462353563656435366662
+          61316566316132326264373238333566306631383438303265633263303237626134356331663138
+          39333233356430386464656635626666376433623830663235373663656461386636386634343739
+          34623861646135353666643035383532633766383263336533646131623039653438
+#------------------------------------------------------------------
+nano ansible_vault.yml
+
+---
+
+- name: Ansible Vault
+  hosts: all
+  become: yes
+
+  vars:
+    admin_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63353762636638336264306635633565343563353563353637646161393038393164353764623462
+          3938613165393332376463363235393335346436303963360a393862643731653438356534613934
+          39666538303033643334613332303938616332666265643635366565306637363238626438376363
+          3661663161613932630a336531363763323865386233666232613234636338653038363639366432
+          36626137623730656235666239323633363166383062343565633534383039666665323063646534
+          34666635363633343761393261353062326232346466323361356631336462353563656435366662
+          61316566316132326264373238333566306631383438303265633263303237626134356331663138
+          39333233356430386464656635626666376433623830663235373663656461386636386634343739
+          34623861646135353666643035383532633766383263336533646131623039653438
+
+  tasks:
+  - name: Install package Tree
+    apt:
+      name: tree
+      state: present
+
+  - name: Create config file
+    copy:
+      dest: "/home/user1/myconfig.conf"
+      content: |
+        port=9092
+        log= 7days
+        home=/opt/kafka/bin/
+        user=admin
+        password={{ admin_password }}
+#------------------------------------------------------------------
+ansible-playbook playbook_vault.yml --ask-vault-pass
+
+#Другой вариант
+echo -n "$6$Unws,mO9myconfig.confEQ9SC0pHDw1GKLG1i7V2hpl4R.G2yGRbDpElskZp/PkmM.yHFUmbpOZ9WxTxw4v2u/9TN44rV6Gt1nJcA/9Ew/" | ansible-vault encrypt_string
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

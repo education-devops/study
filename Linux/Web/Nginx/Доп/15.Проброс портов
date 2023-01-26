@@ -1,0 +1,38 @@
+mkdir nginx; cd nginx
+
+nano nginx.conf
+
+events {}
+
+http {
+	server {
+		listen 8888;
+
+		location / {
+			return 200 "Hello from NGINX\n";
+		}
+	}
+}
+#-----------------------------------------------------------
+nginx -c /root/nginx/nginx.conf
+
+curl localhost:8888
+#-----------------------------------------------------------
+#Переброска портов с локальной сети
+
+sudo sysctl -w net.ipv4.conf.all.route_localnet=1
+sudo iptables -t nat -A PREROUTING -i enp1s0 -p tcp -m tcp --dport 7788 -j DNAT --to-destination 127.0.0.1:7788
+#-----------------------------------------------------------------------------------------------------------
+php -s localhost:9999
+#-----------------------------------------------------------
+nano resp.txt
+
+Hello from PHP server
+#-----------------------------------------------------------
+ls -l
+
+-rw-r--r-- 1 root root 40K дек  7 09:37 book.png
+-rw-r--r-- 1 root root 104 дек  7 09:34 nginx.conf
+-rw-r--r-- 1 root root  22 дек  7 09:45 resp.txt
+#-----------------------------------------------------------
+php -S localhost:9999 resp.txt
